@@ -1,0 +1,145 @@
+.home {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 60px;
+  min-height: 70vh;
+  background: linear-gradient(to right, #dff3f0, #f8f8f8);
+  font-family: Arial, sans-serif;
+}
+
+/* LEFT */
+.home-left {
+  max-width: 50%;
+}
+
+.home-left h1 {
+  font-size: 48px;
+  line-height: 1.2;
+  color: #1c2c4c;
+}
+
+.green {
+  color: #2ecc71;
+}
+
+.home-left p {
+  margin-top: 20px;
+  color: #666;
+  font-size: 16px;
+}
+
+.explore-btn {
+  margin-top: 30px;
+  padding: 12px 25px;
+  border: none;
+  background-color: #2ecc71;
+  color: white;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* RIGHT */
+.home-right {
+  position: relative;
+  width: 40%;
+  display: flex;
+  justify-content: center;
+}
+
+.home-right img {
+  width: 100%;
+  max-width: 400px;
+  z-index: 2;
+}
+
+/* Background circle */
+.circle-bg {
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  background-color: #2ecc71;
+  border-radius: 50%;
+  top: 50px;
+  left: 50px;
+  z-index: 1;
+}
+
+/* Floating Cards */
+.card {
+  position: absolute;
+  background: white;
+  padding: 15px 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  z-index: 3;
+}
+
+.card h3 {
+  margin: 0;
+  color: #1c2c4c;
+}
+
+.card p {
+  margin: 5px 0 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.card1 {
+  top: 20px;
+  right: 0;
+}
+
+.card2 {
+  bottom: 40px;
+  left: 0;
+}
+/* FEATURES SECTION */
+.features {
+  display: flex;
+  justify-content: space-between;
+  background-color: #f8f8f8;
+}
+
+.feature-box {
+  width: 33.33%;
+  padding: 40px;
+  border-right: 1px solid #ddd;
+}
+
+.feature-box:last-child {
+  border-right: none;
+}
+
+.feature-box h3 {
+  color: #1c2c4c;
+  margin-bottom: 15px;
+}
+
+.feature-box p {
+  color: #666;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* Button */
+.feature-btn {
+  margin-top: 25px;
+  background-color: #cfe9df;   /* full background */
+  border: none;
+  padding: 12px 22px;
+  border-radius: 30px;         /* makes it full rounded */
+  font-weight: 600;
+  cursor: pointer;
+  color: #1c2c4c;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Remove old circle effect */
+.circle {
+  display: none;
+}
