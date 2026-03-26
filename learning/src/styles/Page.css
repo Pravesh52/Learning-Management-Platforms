@@ -1,0 +1,143 @@
+:root {
+  --primary-green: #2ecc71;
+  --dark-blue: #132742; /* Deep blue used for heading */
+  --text-gray: #777777;
+  --card-border: #f0f0f0;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 5px;
+  background-color: #ffffff;
+  font-family: 'Arial', sans-serif;
+}
+
+.content-wrapper {
+  display: flex;
+  max-width: 1100px;
+  gap: 50px;
+  align-items: center;
+}
+
+/* Left Side: Image Masking Logic */
+.image-section {
+  flex: 1;
+  display: flex;
+  height: 500px;
+
+  gap: 15px; /* Panes ke beech ka gap */
+}
+
+.mask-item {
+  height: 100%;
+  border-radius: 10px;
+  background-size: cover; /* **MAHATTWAPOORN:** Image container ko bharegi */
+  background-repeat: no-repeat;
+}
+
+/* Har pane ke liye specific width aur positioning */
+.mask-1 { 
+  width: 28%; 
+  background-position: left; /* Image ka left hissa dikhayega */
+}
+
+.mask-2 { 
+  width: 44%; 
+  background-position: center; /* Image ka center hissa dikhayega */
+  /* center pane ko thoda upar karne ke liye */
+  transform: translateY(-20px); 
+}
+
+.mask-3 { 
+  width: 28%; 
+  background-position: right; /* Image ka right hissa dikhayega */
+}
+
+/* Right Side: Text Content Styling */
+.text-section {
+  flex: 1;
+}
+
+.main-title {
+  font-size: 42px;
+  color: var(--dark-blue);
+  line-height: 1.2;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.highlight-ahead {
+  color: var(--primary-green);
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 2px;
+}
+
+.highlight-for-your {
+  color: var(--primary-green);
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 2px;
+}
+
+.description {
+  color: var(--text-gray);
+  margin-bottom: 30px;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+.info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 20px;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  margin-bottom: 20px;
+  transition: box-shadow 0.3s ease;
+}
+
+.info-card:hover {
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+.icon-box {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.mission-icon { background-color: #d2f6e4; color: #2ecc71; }
+.vision-icon { background-color: #d0f9e5; color: #2ecc71; }
+
+.info-content h3 {
+  margin: 0 0 5px 0;
+  color: var(--dark-blue);
+  font-size: 18px;
+}
+
+.info-content p {
+  margin: 0;
+  color: var(--text-gray);
+  font-size: 14px;
+}
+
+.discover-btn {
+  background-color: var(--primary-green);
+  color: white;
+  border: none;
+  padding: 15px 35px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+}

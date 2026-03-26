@@ -15,6 +15,7 @@ import Footer from "./components/footer";
 
 // Protected Route
 import PrivateRoute from "./routes/PrivateRoute";
+import Pages from "./pages/Pages";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
+        <Route path='/pages'element={<Pages/>}/>
         <Route path="/login" element={<Login />} />
         {/* <Route path="/register" element={<Register />} /> */}
         {/* <Route path="/course/:id" element={<CourseDetails />} /> */}
@@ -39,7 +41,7 @@ function App() {
           <Route path="/create-course" element={<CreateCourse />} />
         </Route> */}
       </Routes>
-
+      <Pages/>
       <Footer />
     </Router>
   );

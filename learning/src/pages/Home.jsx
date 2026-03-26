@@ -45,8 +45,14 @@ const Home = () => {
         <div className="feature-box">
           <h3>Quality Education</h3>
           <p>
-            Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod
-            tempor ut labore.
+            Quality education builds knowledge, 
+            skills, and critical thinking. 
+            It promotes creativity, confidence,
+             and strong values. It ensures equal 
+             opportunities and supports personal and 
+             professional growth. Quality education
+              shapes responsible individuals and 
+              drives social and economic development.
           </p>
           <button className="feature-btn">
             <span className="circle"></span>
@@ -57,8 +63,15 @@ const Home = () => {
         <div className="feature-box">
           <h3>Experienced Teachers</h3>
           <p>
-            Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod
-            tempor ut labore.
+            Experienced teachers play a vital role
+             in delivering quality education. They
+              bring deep knowledge, practical
+               insights, and effective teaching 
+               methods to the classroom. Their 
+               guidance helps students understand 
+               concepts clearly, build confidence, 
+               and develop critical thinking skills.
+                Experienced teachers also mentor students, inspire learning, and create a supportive environment for overall growth.
           </p>
           <button className="feature-btn">
             <span className="circle"></span>
@@ -69,8 +82,11 @@ const Home = () => {
         <div className="feature-box">
           <h3>Delicious Food</h3>
           <p>
-            Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod
-            tempor ut labore.
+           Delicious food provides nourishment, 
+           satisfaction, and joy. It is prepared with 
+           quality ingredients, balanced flavors, and proper
+            hygiene. Good food supports health, boosts energy, 
+           and enhances the overall experience of dining.
           </p>
           <button className="feature-btn">
             <span className="circle"></span>
