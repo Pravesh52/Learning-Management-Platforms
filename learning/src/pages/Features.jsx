@@ -1,5 +1,6 @@
 import React from 'react';
 import '../styles/Features.css';
+import Courses from './Courses';
 
 const Features = () => {
   const featureData = [
@@ -36,6 +37,8 @@ const Features = () => {
   ];
 
   return (
+    <>
+    <div>
     <section className="features-container">
       <div className="features-header">
         <div className="sub-title-wrapper">
@@ -61,6 +64,11 @@ const Features = () => {
         ))}
       </div>
     </section>
+    </div>
+    
+    <Courses/>
+    </>
+
   );
 };
 

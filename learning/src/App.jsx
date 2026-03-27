@@ -16,6 +16,8 @@ import Footer from "./components/footer";
 // Protected Route
 import PrivateRoute from "./routes/PrivateRoute";
 import Pages from "./pages/Pages";
+import Signup from "./pages/Signup";
+import Courses from "./pages/Courses";
 
 function App() {
   return (
@@ -27,7 +29,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path='/pages'element={<Pages/>}/>
         <Route path="/login" element={<Login />} />
-        {/* <Route path="/register" element={<Register />} /> */}
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/course"element={<Courses/>}/>
         {/* <Route path="/course/:id" element={<CourseDetails />} /> */}
 
         {/* Protected Routes */}
