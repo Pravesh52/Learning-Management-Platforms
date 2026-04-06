@@ -20,7 +20,7 @@ const Navbar = () => {
         <li onClick={() => navigate("/pages")}>Pages</li>
         <li onClick={() => navigate("/courses")}>Courses</li>
         <li onClick={() => navigate("/Blog")}>Blog</li>
-        <li onClick={() => navigate("/footer")}>Contact</li>
+        <li onClick={() => navigate("/Footer")}>Contact</li>
       </ul>
 
       {/* Right Section */}

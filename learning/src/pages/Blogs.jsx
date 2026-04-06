@@ -78,7 +78,7 @@ const Blogs = () => {
       </h2>
 
       <div className="blog-container">
-        {blogsData.map((item) => (
+        {blogsData. map((item) => (
           <div className="blog-card" key={item.id}>
             <img src={item.image} alt="instructor" />
 

@@ -11,7 +11,7 @@ import Login from "./pages/Login";
 
 // Components
 import Navbar from "./components/Navbar";
-import Footer from "./components/footer";
+import Footer from "./components/Footer";
 
 // Protected Route
 import PrivateRoute from "./routes/PrivateRoute";
@@ -31,6 +31,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/course"element={<Courses/>}/>
+        {/* <Route path="/footer" element={<Footer/>}/> */}
         {/* <Route path="/course/:id" element={<CourseDetails />} /> */}
 
         {/* Protected Routes */}
