@@ -65,6 +65,7 @@ import Pages from "./pages/Pages";
 import Signup from "./pages/Signup";
 import Courses from "./pages/Courses";
 
+
 // Components
 import Navbar from "./components/Navbar";
 import Footer from "./components/footer";
@@ -82,6 +83,9 @@ function App() {
         <Route path="/courses" element={<Courses />} />
         {/* <Route path="/footer" element={<Footer/>}/> */}
       </Routes>
+      <Pages/>
+      <Courses/>
+      
 
       {/* Footer har page pe show hoga */}
       <Footer />

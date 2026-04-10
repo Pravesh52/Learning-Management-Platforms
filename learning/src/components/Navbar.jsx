@@ -169,7 +169,7 @@ const Navbar = () => {
         <li><Link to="/pages">Pages</Link></li>
         <li>
           {/* Contact → scroll to footer */}
-          <a href="/footer">Contact</a>
+          <a href="/Footer">Contact</a>
         </li>
       </ul>
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import '../styles/Page.css'; 
 import studyImage from '../assets/about.png'; 
-import Features from './Features';
+
 // import { Router } from 'react-router-dom';
 
 const Page = () => {
@@ -62,7 +62,7 @@ const Page = () => {
       
     </div>
     
-        <Features/>
+        
     </>
     
        
