@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../styles/Signup.css";
-import { Link } from "react-router-dom";
+import { Link,useNavigate} from "react-router-dom";
+import axios from "axios"; // ✅ ADD
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -10,13 +11,41 @@ const Signup = () => {
     confirmPassword: ""
   });
 
+  const [error, setError] = useState("");     // ✅ ADD
+  const [success, setSuccess] = useState(""); // ✅ ADD
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Signup Data:", formData);
+
+    // ✅ Password match check
+    if (formData.password !== formData.confirmPassword) {
+      return setError("Passwords do not match");
+    }
+
+    try {
+      setError("");
+      setSuccess("");
+
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/signup",
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password
+        }
+      );
+
+      // ✅ SUCCESS MESSAGE
+      setSuccess("Signup successful");
+      navigate("/");
+
+    } catch (error) {
+      setError(error.response?.data?.message || "Something went wrong");
+    }
   };
 
   return (
@@ -24,6 +53,12 @@ const Signup = () => {
       <div className="signup-box">
         <h2>Create Account</h2>
         <p>Join SkillStack today</p>
+
+        {/* ✅ SUCCESS */}
+        {success && <p style={{ color: "green" }}>{success}</p>}
+
+        {/* ❌ ERROR */}
+        {error && <p style={{ color: "red" }}>{error}</p>}
 
         <form onSubmit={handleSubmit}>
           <input
@@ -65,7 +100,7 @@ const Signup = () => {
           <button type="submit">Sign Up</button>
         </form>
 
-       <p className="switch-text">
+        <p className="switch-text">
           Already have an account? 
           <Link to="/login">
             <span> Login</span>

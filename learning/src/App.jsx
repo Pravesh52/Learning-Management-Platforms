@@ -1,53 +1,46 @@
-// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 
 // // Pages
 // import Home from "./pages/Home";
 // import Login from "./pages/Login";
-// // import Register from "./pages/Register";
-// // import Dashboard from "./pages/Dashboard";
-// // import CourseDetails from "./pages/CourseDetails";
-// // import WatchCourse from "./pages/WatchCourse";
-// // import CreateCourse from "./pages/CreateCourse";
+// import Pages from "./pages/Pages";
+// import Signup from "./pages/Signup";
+// import Courses from "./pages/Courses";
+// import Dashboard from "./pages/Dashboard";
 
 // // Components
 // import Navbar from "./components/Navbar";
 // import Footer from "./components/footer";
 
-// // Protected Route
-// import PrivateRoute from "./routes/PrivateRoute";
-// import Pages from "./pages/Pages";
-// import Signup from "./pages/Signup";
-// import Courses from "./pages/Courses";
+// // 🔥 Layout function
+// function Layout() {
+//   const location = useLocation();
+
+//   // Dashboard pe navbar/footer hide
+//   const hideLayout = location.pathname === "/dashboard";
+
+//   return (
+//     <>
+//       {!hideLayout && <Navbar />}
+
+//       <Routes>
+//         <Route path="/" element={<Home />} />
+//         <Route path="/pages" element={<Pages />} />
+//         <Route path="/login" element={<Login />} />
+//         <Route path="/signup" element={<Signup />} />
+//         <Route path="/courses" element={<Courses />} />
+//         <Route path="/dashboard" element={<Dashboard />} />
+//       </Routes>
+
+//       {!hideLayout && <Footer />}
+//     </>
+//   );
+// }
 
 // function App() {
 //   return (
 //     <Router>
-//       <Navbar />
-
-//       <Routes>
-//         {/* Public Routes */}
-//         <Route path="/" element={<Home />} />
-//         <Route path='/pages'element={<Pages/>}/>
-//         <Route path="/login" element={<Login />} />
-//         <Route path="/signup" element={<Signup />} />
-//         <Route path="/course"element={<Courses/>}/>
-//         <Route path="/contact" element={<Footer />} />
-//         {/* <Route path="/footer" element={<Footer/>}/> */}
-//         {/* <Route path="/course/:id" element={<CourseDetails />} /> */}
-
-//         {/* Protected Routes */}
-//         {/* <Route element={<PrivateRoute />}>
-//           <Route path="/dashboard" element={<Dashboard />} />
-//           <Route path="/course/watch/:id" element={<WatchCourse />} />
-//         </Route> */}
-
-//         {/* Instructor Only Route */}
-//         {/* <Route element={<PrivateRoute role="instructor" />}>
-//           <Route path="/create-course" element={<CreateCourse />} />
-//         </Route> */}
-//       </Routes>
-//       <Pages/>
-//       <Footer />
+//       <Layout />
 //     </Router>
 //   );
 // }
@@ -56,7 +49,7 @@
 
 
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 
 // Pages
 import Home from "./pages/Home";
@@ -64,15 +57,22 @@ import Login from "./pages/Login";
 import Pages from "./pages/Pages";
 import Signup from "./pages/Signup";
 import Courses from "./pages/Courses";
-
+import Dashboard from "./pages/Dashboard";
 
 // Components
 import Navbar from "./components/Navbar";
 import Footer from "./components/footer";
 
-function App() {
+// 🔥 Layout
+function Layout() {
+  const location = useLocation();
+
+  // Dashboard pe footer hide
+  const hideFooter = location.pathname === "/dashboard";
+
   return (
-    <Router>
+    <>
+      {/* ✅ Navbar hamesha dikhega */}
       <Navbar />
 
       <Routes>
@@ -81,14 +81,19 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/courses" element={<Courses />} />
-        {/* <Route path="/footer" element={<Footer/>}/> */}
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
-      <Pages/>
-      <Courses/>
-      
 
-      {/* Footer har page pe show hoga */}
-      <Footer />
+      {/* ❌ Dashboard pe footer hide */}
+      {!hideFooter && <Footer />}
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <Layout />
     </Router>
   );
 }
