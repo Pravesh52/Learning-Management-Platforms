@@ -25,27 +25,29 @@ const courses = [
 
 const Courses = () => {
   return (
-     <>
-    <section className="courses">
-      <h4 className="sub-title">Courses</h4>
-      <h2 className="main-title">Choose Our Top Courses</h2>
+    <>
+      <section className="courses">
+        <h4 className="sub-title">Courses</h4>
+        <h2 className="main-title">Choose Our Top Courses</h2>
 
-      <div className="course-container">
-        {courses.map((course) => (
-          <div className="course-card" key={course.id}>
-            <img src={course.image} alt="course" />
-            <div className="course-content">
-              <h3>{course.title}</h3>
-              <p className="price">{course.price}</p>
-              <button>Enroll Now</button>
+        <div className="course-container">
+          {courses.map((course) => (
+            <div className="course-card" key={course.id}>
+              <div className="img-box">
+                <img src={course.image} alt="course" />
+              </div>
+
+              <div className="course-content">
+                <h3>{course.title}</h3>
+                <p className="price">{course.price}</p>
+                <button>Enroll Now</button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-    </section>
+          ))}
+        </div>
+      </section>
 
-    <Blogs/>
-   
+      <Blogs />
     </>
   );
 };

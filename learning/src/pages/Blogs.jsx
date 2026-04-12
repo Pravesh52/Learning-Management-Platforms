@@ -11,15 +11,12 @@ const blogsData = [
     courses: 3,
     students: 3,
     image: expertImg,
-
     social: {
       facebook: "https://facebook.com/masum",
       twitter: "https://twitter.com/masum",
       linkedin: "https://linkedin.com/in/masum",
     },
-
   },
-
   {
     id: 2,
     name: "Masum Billah",
@@ -27,15 +24,12 @@ const blogsData = [
     courses: 6,
     students: 5,
     image: expertImg,
-
     social: {
       facebook: "https://facebook.com/masum",
       twitter: "https://twitter.com/masum",
       linkedin: "https://linkedin.com/in/masum",
     },
-
   },
-
   {
     id: 3,
     name: "Kenneth Renteria",
@@ -43,15 +37,12 @@ const blogsData = [
     courses: 0,
     students: 0,
     image: expertImg,
-
     social: {
       facebook: "https://facebook.com/masum",
       twitter: "https://twitter.com/masum",
       linkedin: "https://linkedin.com/in/masum",
     },
-
   },
-
   {
     id: 4,
     name: "Richard Hood",
@@ -59,13 +50,11 @@ const blogsData = [
     courses: 2,
     students: 0,
     image: expertImg,
-
     social: {
       facebook: "https://facebook.com/masum",
       twitter: "https://twitter.com/masum",
       linkedin: "https://linkedin.com/in/masum",
     },
-
   },
 ];
 
@@ -78,32 +67,35 @@ const Blogs = () => {
       </h2>
 
       <div className="blog-container">
-        {blogsData. map((item) => (
+        {blogsData.map((item) => (
           <div className="blog-card" key={item.id}>
-            <img src={item.image} alt="instructor" />
+            
+            <div className="img-box">
+              <img src={item.image} alt="instructor" />
+            </div>
 
             <div className="card-content">
               <h3>{item.name}</h3>
               <p className="role">{item.role}</p>
 
-              <p> 🗃️ {item.courses} Courses</p>
-              <p>👤 {item.students}  Students</p>
+              <div className="stats">
+                <span>📚 {item.courses}</span>
+                <span>👤 {item.students}</span>
+              </div>
 
               <div className="socials">
-               <a href={item.social.facebook} target="_blank" rel="noopener noreferrer">
-                    <FaFacebookF />
+                <a href={item.social.facebook} target="_blank" rel="noreferrer">
+                  <FaFacebookF />
                 </a>
-
-                <a href={item.social.twitter} target="_blank" rel="noopener noreferrer">
-                    <FaTwitter />
+                <a href={item.social.twitter} target="_blank" rel="noreferrer">
+                  <FaTwitter />
                 </a>
-
-                <a href={item.social.linkedin} target="_blank" rel="noopener noreferrer">
-                    <FaLinkedinIn />
+                <a href={item.social.linkedin} target="_blank" rel="noreferrer">
+                  <FaLinkedinIn />
                 </a>
-                
               </div>
             </div>
+
           </div>
         ))}
       </div>

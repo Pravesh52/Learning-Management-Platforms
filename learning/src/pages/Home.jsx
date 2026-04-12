@@ -1,7 +1,8 @@
 import React from "react";
 import "../styles/Home.css";
 import studentImg from "../assets/student.png";
-
+import Pages from "./Pages";
+import Courses from "./Courses";
 const Home = () => {
   return (
     <>
@@ -94,6 +95,10 @@ const Home = () => {
           </button>
         </div>
       </section>
+
+
+      <Pages/>
+      <Courses/>
 
       
     </>
