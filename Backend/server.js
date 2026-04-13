@@ -10,7 +10,7 @@ app.use(express.json());
 
 // routes
 app.use("/api/auth", require("./routes/authRoutes"));
-
+// app.use("/api/admin", require("./routes/adminRoutes"));
 // DB connect
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB Connected"))
