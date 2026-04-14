@@ -1,3 +1,4 @@
+
 // import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 
 // // Pages
@@ -12,16 +13,17 @@
 // import Navbar from "./components/Navbar";
 // import Footer from "./components/footer";
 
-// // 🔥 Layout function
+// // 🔥 Layout
 // function Layout() {
 //   const location = useLocation();
 
-//   // Dashboard pe navbar/footer hide
-//   const hideLayout = location.pathname === "/dashboard";
+//   // Dashboard pe footer hide
+//   const hideFooter = location.pathname === "/dashboard";
 
 //   return (
 //     <>
-//       {!hideLayout && <Navbar />}
+//       {/* ✅ Navbar hamesha dikhega */}
+//       <Navbar />
 
 //       <Routes>
 //         <Route path="/" element={<Home />} />
@@ -32,7 +34,8 @@
 //         <Route path="/dashboard" element={<Dashboard />} />
 //       </Routes>
 
-//       {!hideLayout && <Footer />}
+//       {/* ❌ Dashboard pe footer hide */}
+//       {!hideFooter && <Footer />}
 //     </>
 //   );
 // }
@@ -54,38 +57,44 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from "react-route
 // Pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import Pages from "./pages/Pages";
 import Signup from "./pages/Signup";
+import Pages from "./pages/Pages";
 import Courses from "./pages/Courses";
 import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 // Components
 import Navbar from "./components/Navbar";
-import Footer from "./components/footer";
+import Footer from "./components/Footer";
 
-// 🔥 Layout
+// 🔥 Layout control
 function Layout() {
   const location = useLocation();
 
-  // Dashboard pe footer hide
-  const hideFooter = location.pathname === "/dashboard";
+  // 👉 jaha navbar/footer nahi dikhana
+  const hideLayout =
+    location.pathname === "/dashboard" 
+    // location.pathname === "/admin";
 
   return (
     <>
-      {/* ✅ Navbar hamesha dikhega */}
-      <Navbar />
+      {!hideLayout && <Navbar />}
 
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/pages" element={<Pages />} />
+        <Route path="/courses" element={<Courses />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/courses" element={<Courses />} />
+
+        {/* ✅ USER DASHBOARD */}
         <Route path="/dashboard" element={<Dashboard />} />
+
+        {/* ✅ ADMIN DASHBOARD */}
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
 
-      {/* ❌ Dashboard pe footer hide */}
-      {!hideFooter && <Footer />}
+      {!hideLayout && <Footer />}
     </>
   );
 }
