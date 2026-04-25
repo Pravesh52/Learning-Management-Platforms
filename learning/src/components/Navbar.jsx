@@ -14,30 +14,44 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    navigate("/login"); // redirect after logout
+    navigate("/login");
+  };
+
+  // ✅ ROLE BASED NAVIGATION
+  const handleDashboardRedirect = () => {
+    if (!user) return;
+
+    if (user.role === "admin") {
+      navigate("/admin");
+    } else {
+      navigate("/dashboard");
+    }
   };
 
   return (
     <nav className="navbar">
 
-      {/* Logo */}
-      <div className="logo" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
+      {/* 🔥 LOGO */}
+      <div
+        className="logo"
+        onClick={() => navigate("/")}
+        style={{ cursor: "pointer" }}
+      >
         <FaGraduationCap className="logo-icon" />
         <span>SkillStack</span>
       </div>
 
-      {/* Menu */}
+      {/* 🔥 MENU */}
       <ul className="nav-links">
         <li><Link to="/">Home</Link></li>
         <li><Link to="/courses">Courses</Link></li>
         <li><Link to="/pages">Pages</Link></li>
-        <li>
-          <Link to="/">Contact</Link>
-        </li>
+        <li><Link to="/">Contact</Link></li>
       </ul>
 
-      {/* Right Section */}
+      {/* 🔥 RIGHT SECTION */}
       <div className="nav-right">
+
         <FaSearch className="icon" />
 
         <div className="cart">
@@ -45,22 +59,37 @@ const Navbar = () => {
           <span className="badge">0</span>
         </div>
 
-        {/* ✅ CONDITION */}
+        {/* ✅ IF USER LOGGED IN */}
         {user ? (
           <>
-            {/* USER NAME (clickable) */}
+            {/* 🔥 ADMIN BUTTON */}
+            {user.role === "admin" && (
+              <button
+                className="login-btn"
+                onClick={() => navigate("/admin")}
+                style={{ marginRight: "10px" }}
+              >
+                Admin Panel
+              </button>
+            )}
+
+            {/* 🔥 USER NAME */}
             <span
-              onClick={() => navigate("/dashboard")}
-              style={{ marginRight: "10px", fontWeight: "bold", cursor: "pointer" }}
+              onClick={handleDashboardRedirect}
+              style={{
+                marginRight: "10px",
+                fontWeight: "bold",
+                cursor: "pointer"
+              }}
             >
               {user.name}
             </span>
 
-            {/* PROFILE IMAGE (clickable) */}
+            {/* 🔥 PROFILE IMAGE */}
             <img
               src={`https://ui-avatars.com/api/?name=${user.name}`}
               alt="profile"
-              onClick={() => navigate("/dashboard")}
+              onClick={handleDashboardRedirect}
               style={{
                 width: "35px",
                 height: "35px",
@@ -70,7 +99,7 @@ const Navbar = () => {
               }}
             />
 
-            {/* LOGOUT */}
+            {/* 🔥 LOGOUT */}
             <button className="login-btn" onClick={handleLogout}>
               Logout
             </button>

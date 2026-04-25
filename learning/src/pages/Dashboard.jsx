@@ -1,15 +1,25 @@
 import React, { useState } from "react";
 import "../styles/Dashboard.css";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const user = JSON.parse(localStorage.getItem("user"));
+  const navigate = useNavigate();
+
   const [activeTab, setActiveTab] = useState("dashboard");
+
+  // 🔥 LOGOUT FUNCTION
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    navigate("/"); // ✅ direct home page
+  };
 
   const renderContent = () => {
     if (activeTab === "dashboard") {
       return (
         <>
-          {/* 🔥 TOP STATS */}
           <div className="stats">
             <div className="stat-card">
               <p>Enrolled Courses</p>
@@ -29,7 +39,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* 🔥 TASK SECTION */}
           <div className="section">
             <h2>My Tasks</h2>
             <ul>
@@ -39,7 +48,6 @@ const Dashboard = () => {
             </ul>
           </div>
 
-          {/* 🔥 COURSES */}
           <div className="section">
             <h2>Continue Learning</h2>
             <div className="course-list">
@@ -61,17 +69,9 @@ const Dashboard = () => {
       );
     }
 
-    if (activeTab === "courses") {
-      return <h2>Courses Section</h2>;
-    }
-
-    if (activeTab === "progress") {
-      return <h2>Progress Section</h2>;
-    }
-
-    if (activeTab === "messages") {
-      return <h2>Messages Section</h2>;
-    }
+    if (activeTab === "courses") return <h2>Courses Section</h2>;
+    if (activeTab === "progress") return <h2>Progress Section</h2>;
+    if (activeTab === "messages") return <h2>Messages Section</h2>;
 
     if (activeTab === "settings") {
       return (
@@ -103,10 +103,34 @@ const Dashboard = () => {
       {/* Main */}
       <div className="main-content">
 
+        {/* 🔥 HEADER */}
         <div className="header">
           <h1>Welcome, {user?.name} 👋</h1>
-          <div className="profile">
-            <img src={`https://ui-avatars.com/api/?name=${user?.name}`} />
+
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            
+            {/* PROFILE */}
+            <img 
+              src={`https://ui-avatars.com/api/?name=${user?.name}`} 
+              alt="profile"
+              style={{ width: "40px", borderRadius: "50%" }}
+            />
+
+            {/* 🔥 LOGOUT BUTTON */}
+            <button
+              onClick={handleLogout}
+              style={{
+                padding: "8px 15px",
+                background: "#ef4444",
+                color: "white",
+                border: "none",
+                borderRadius: "6px",
+                cursor: "pointer"
+              }}
+            >
+              Logout
+            </button>
+
           </div>
         </div>
 

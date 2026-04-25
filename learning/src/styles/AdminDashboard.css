@@ -1,24 +1,24 @@
-/* ===== MAIN CONTAINER ===== */
-.admin-container {
-  display: flex;
-  height: 100vh;
-  background: #f5f7fb;
+body {
+  margin: 0;
   font-family: Arial, sans-serif;
 }
 
-/* ===== SIDEBAR ===== */
+/* MAIN CONTAINER */
+.admin-container {
+  display: flex;
+  height: 100vh;
+}
+
+/* SIDEBAR */
 .sidebar {
   width: 240px;
   background: #0f172a;
   color: white;
   padding: 20px;
-  display: flex;
-  flex-direction: column;
 }
 
 .sidebar h2 {
   margin-bottom: 30px;
-  font-size: 22px;
 }
 
 .sidebar ul {
@@ -28,126 +28,70 @@
 
 .sidebar li {
   padding: 12px;
-  margin-bottom: 8px;
   cursor: pointer;
   border-radius: 6px;
-  transition: 0.3s;
 }
 
 .sidebar li:hover {
   background: #1e293b;
 }
 
-.sidebar .active {
-  background: #3b82f6;
-}
-
-/* ===== MAIN ===== */
+/* MAIN */
 .main {
   flex: 1;
   padding: 20px;
+  background: #f1f5f9;
   overflow-y: auto;
 }
 
-/* ===== TOPBAR ===== */
-.topbar {
+/* TOP BAR */
+.top-bar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-bottom: 20px;
 }
 
-.topbar input {
-  padding: 10px;
-  width: 280px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-.profile {
-  background: #ddd;
-  padding: 10px 14px;
-  border-radius: 50%;
-  font-weight: bold;
-}
-
-/* ===== DASHBOARD GRID ===== */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 250px 1fr 300px;
-  gap: 20px;
-}
-
-/* ===== LEFT PANEL ===== */
-.left-panel .card {
-  padding: 20px;
-  margin-bottom: 15px;
-  border-radius: 12px;
-  color: white;
-  font-weight: bold;
-}
-
-.blue {
-  background: #3b82f6;
-}
-
-/* ===== CENTER PANEL ===== */
-.mini-cards {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+.admin-info {
+  display: flex;
+  align-items: center;
   gap: 15px;
+  font-weight: bold;
 }
 
-.mini {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-}
-
-/* ===== LESSON ===== */
-.lesson {
-  margin-top: 20px;
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-.lesson-item {
-  padding: 10px 0;
-  border-bottom: 1px solid #eee;
-}
-
-/* ===== RIGHT PANEL ===== */
-.teacher {
-  background: white;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-}
-
-.webinar {
-  background: #60a5fa;
+/* LOGOUT BUTTON */
+.logout-btn {
+  background: #ef4444;
   color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+}
+
+/* CARD */
+.card {
+  background: white;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 10px;
+}
+
+/* GRAPH */
+.graph-card {
+  background: white;
   padding: 20px;
   border-radius: 10px;
   margin-top: 20px;
 }
 
-.webinar button {
-  margin-top: 10px;
-  padding: 8px 15px;
-  border: none;
-  background: white;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-/* ===== FORM ===== */
+/* FORM */
 .form {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
   flex-wrap: wrap;
 }
 
@@ -162,32 +106,6 @@
   background: #3b82f6;
   color: white;
   border: none;
-  padding: 10px 15px;
+  padding: 10px;
   border-radius: 6px;
-  cursor: pointer;
-}
-
-/* ===== CARD ===== */
-.card {
-  background: white;
-  padding: 15px;
-  margin: 10px 0;
-  border-radius: 10px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-  transition: 0.3s;
-}
-
-.card:hover {
-  transform: translateY(-5px);
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 900px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .sidebar {
-    display: none;
-  }
 }

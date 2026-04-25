@@ -2,13 +2,17 @@ const express = require("express");
 const router = express.Router();
 const admin = require("../controllers/adminController");
 
-router.get("/dashboard", admin.getDashboard);
+// ✅ middleware import
+const { protect, adminOnly } = require("../middleware/authMiddleware");
 
-// USERS CRUD
-router.get("/users", admin.getUsers);
-router.post("/users", admin.createUser);
-router.put("/users/:id", admin.updateUser);
-router.delete("/users/:id", admin.deleteUser);
+// 🔒 ADMIN PROTECTED ROUTES
+router.get("/dashboard", protect, adminOnly, admin.getDashboard);
 
-router.get("/analytics", admin.getAnalytics);
+router.get("/users", protect, adminOnly, admin.getUsers);
+router.post("/users", protect, adminOnly, admin.createUser);
+router.put("/users/:id", protect, adminOnly, admin.updateUser);
+router.delete("/users/:id", protect, adminOnly, admin.deleteUser);
+
+router.get("/analytics", protect, adminOnly, admin.getAnalytics);
+
 module.exports = router;

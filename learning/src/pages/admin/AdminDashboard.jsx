@@ -14,13 +14,12 @@ import {
 } from "recharts";
 
 const AdminDashboard = () => {
-
   const [activeTab, setActiveTab] = useState("dashboard");
-
   const [courses, setCourses] = useState([]);
   const [users, setUsers] = useState([]);
 
-  // ✅ ANALYTICS STATE
+  const admin = JSON.parse(localStorage.getItem("user"));
+
   const [analytics, setAnalytics] = useState({
     userGrowth: [],
     coursePerformance: []
@@ -33,68 +32,49 @@ const AdminDashboard = () => {
     status: "draft"
   });
 
-  // ✅ SAFE COMBINED DATA
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "/";
+  };
+
   const combinedData = (analytics.userGrowth || []).map((item, index) => ({
     month: item.month,
     users: item.users,
     students: analytics.coursePerformance[index]?.students || 0
   }));
 
-  // ================= API =================
-
-  const fetchCourses = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/api/courses");
-      setCourses(res.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const fetchUsers = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/api/admin/users");
-      setUsers(res.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const fetchAnalytics = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/api/admin/analytics");
-      setAnalytics(res.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const createCourse = async () => {
-    try {
-      await axios.post("http://localhost:5000/api/courses", newCourse);
-      fetchCourses();
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const deleteCourse = async (id) => {
-    try {
-      await axios.delete(`http://localhost:5000/api/courses/${id}`);
-      fetchCourses();
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  // ✅ LOAD ALL DATA
+  // API CALLS
   useEffect(() => {
     fetchCourses();
     fetchUsers();
     fetchAnalytics();
   }, []);
 
-  // ================= UI =================
+  const fetchCourses = async () => {
+    const res = await axios.get("http://localhost:5000/api/courses");
+    setCourses(res.data);
+  };
+
+  const fetchUsers = async () => {
+    const res = await axios.get("http://localhost:5000/api/admin/users");
+    setUsers(res.data);
+  };
+
+  const fetchAnalytics = async () => {
+    const res = await axios.get("http://localhost:5000/api/admin/analytics");
+    setAnalytics(res.data);
+  };
+
+  const createCourse = async () => {
+    await axios.post("http://localhost:5000/api/courses", newCourse);
+    fetchCourses();
+  };
+
+  const deleteCourse = async (id) => {
+    await axios.delete(`http://localhost:5000/api/courses/${id}`);
+    fetchCourses();
+  };
 
   return (
     <div className="admin-container">
@@ -102,7 +82,6 @@ const AdminDashboard = () => {
       {/* SIDEBAR */}
       <div className="sidebar">
         <h2>SkillStack</h2>
-
         <ul>
           <li onClick={() => setActiveTab("dashboard")}>Dashboard</li>
           <li onClick={() => setActiveTab("courses")}>Courses</li>
@@ -112,10 +91,20 @@ const AdminDashboard = () => {
         </ul>
       </div>
 
-      {/* MAIN */}
+      {/* RIGHT SIDE (MAIN AREA) */}
       <div className="main">
 
-        {/* ================= DASHBOARD ================= */}
+        {/* ✅ TOP BAR INSIDE MAIN */}
+        <div className="top-bar">
+          <div className="admin-info">
+            <span>{admin?.name || "Admin"}</span>
+            <button onClick={handleLogout} className="logout-btn">
+              Logout
+            </button>
+          </div>
+        </div>
+
+        {/* DASHBOARD */}
         {activeTab === "dashboard" && (
           <>
             <h2>Overview</h2>
@@ -123,7 +112,6 @@ const AdminDashboard = () => {
             <div className="card">Total Courses: {courses.length}</div>
             <div className="card">Total Students: {users.length}</div>
 
-            {/* GRAPH */}
             <div className="graph-card">
               <h3>Analytics Overview</h3>
 
@@ -135,25 +123,15 @@ const AdminDashboard = () => {
                   <Tooltip />
                   <Legend />
 
-                  <Line
-                    type="monotone"
-                    dataKey="users"
-                    stroke="#3b82f6"
-                    strokeWidth={3}
-                  />
-
-                  <Bar
-                    dataKey="students"
-                    fill="#22c55e"
-                    radius={[5, 5, 0, 0]}
-                  />
+                  <Line type="monotone" dataKey="users" stroke="#3b82f6" />
+                  <Bar dataKey="students" fill="#22c55e" />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
           </>
         )}
 
-        {/* ================= COURSE ================= */}
+        {/* COURSES */}
         {activeTab === "courses" && (
           <>
             <h2>Course Management</h2>
@@ -188,17 +166,7 @@ const AdminDashboard = () => {
           </>
         )}
 
-        {/* ================= QUIZ ================= */}
-        {activeTab === "quiz" && (
-          <h2>Quiz Management (Coming Soon)</h2>
-        )}
-
-        {/* ================= CONTENT ================= */}
-        {activeTab === "content" && (
-          <h2>Content Management (Coming Soon)</h2>
-        )}
-
-        {/* ================= STUDENTS ================= */}
+        {/* STUDENTS */}
         {activeTab === "students" && (
           <>
             <h2>Students</h2>
@@ -207,7 +175,6 @@ const AdminDashboard = () => {
               <div className="card" key={u._id}>
                 <p>{u.name}</p>
                 <p>{u.email}</p>
-                <p>Courses: {u.courses || 0}</p>
               </div>
             ))}
           </>

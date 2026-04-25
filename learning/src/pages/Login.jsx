@@ -8,8 +8,7 @@ const Login = () => {
 
   const [formData, setFormData] = useState({
     email: "",
-    password: "",
-    role: "student"   // ✅ default
+    password: ""
   });
 
   const [error, setError] = useState("");
@@ -37,8 +36,8 @@ const Login = () => {
 
       setSuccess("Login successful");
 
-      // 🔥 ROLE BASED REDIRECT
-      if (formData.role === "admin") {
+      // 🔥 CORRECT ROLE BASED REDIRECT (BACKEND SE)
+      if (res.data.user.role === "admin") {
         navigate("/admin");
       } else {
         navigate("/dashboard");
@@ -60,15 +59,7 @@ const Login = () => {
 
         <form onSubmit={handleSubmit}>
 
-          {/* ✅ ROLE SELECT */}
-          <select
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-          >
-            <option value="student">Student</option>
-            <option value="admin">Admin</option>
-          </select>
+          {/* ❌ ROLE SELECT REMOVE KAR DIYA */}
 
           <input
             type="email"
@@ -92,7 +83,7 @@ const Login = () => {
         </form>
 
         <p className="switch-text">
-          Don't have an account? 
+          Don't have an account?
           <Link to="/signup">
             <span> Sign Up</span>
           </Link>

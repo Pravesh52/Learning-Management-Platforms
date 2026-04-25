@@ -4,6 +4,7 @@ import { Link,useNavigate} from "react-router-dom";
 import axios from "axios"; // ✅ ADD
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -19,34 +20,39 @@ const Signup = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    // ✅ Password match check
-    if (formData.password !== formData.confirmPassword) {
-      return setError("Passwords do not match");
-    }
+  if (formData.password !== formData.confirmPassword) {
+    setError("Passwords do not match");
+    setSuccess("");
+    return;
+  }
 
-    try {
-      setError("");
-      setSuccess("");
+  try {
+    setError("");
+    
+    const res = await axios.post(
+      "http://localhost:5000/api/auth/signup",
+      {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password
+      }
+    );
 
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/signup",
-        {
-          name: formData.name,
-          email: formData.email,
-          password: formData.password
-        }
-      );
+    // ✅ SUCCESS
+    setSuccess(res.data.message);
+    setError(""); // 🔥 important
 
-      // ✅ SUCCESS MESSAGE
-      setSuccess("Signup successful");
-      navigate("/");
+    setTimeout(() => {
+      navigate("/login");
+    }, 1000);
 
-    } catch (error) {
-      setError(error.response?.data?.message || "Something went wrong");
-    }
-  };
+  } catch (error) {
+    setSuccess(""); // 🔥 important
+    setError(error.response?.data?.message || "Something went wrong");
+  }
+};
 
   return (
     <div className="signup-container">
