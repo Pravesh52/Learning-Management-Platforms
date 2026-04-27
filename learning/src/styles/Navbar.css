@@ -20,6 +20,17 @@
   font-size: 28px;
   margin-right: 8px;
 }
+/* REMOVE UNDERLINE FROM NAV LINKS */
+.nav-links a {
+  text-decoration: none;
+  color: black;
+  font-weight: 500;
+}
+
+/* HOVER EFFECT (optional) */
+.nav-links a:hover {
+  color: #6366f1;
+}
 
 /* Nav Links */
 .nav-links {
@@ -79,3 +90,5 @@ background-color: #2fc66e;
   border-radius: 20px;
   cursor: pointer;
 }
+
+

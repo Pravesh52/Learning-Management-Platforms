@@ -18,9 +18,9 @@ const Footer = () => {
 
         {/* LEFT */}
         <div className="footer-col">
-          <h2 className="logo">SkillStack</h2>
+          <h2 className="logo">Climax Academy</h2>
           <p>
-            SkillStack is a modern learning platform designed to empower students with high-quality courses.
+            Climax Academy is a modern learning platform designed to empower students with high-quality courses.
           </p>
 
           <div className="socials">
@@ -68,7 +68,7 @@ const Footer = () => {
             <FiPhone />
             <div>
               <h4>Phone</h4>
-              <p>+91 1234567895</p>
+              <p>+91 8319661649</p>
             </div>
           </div>
 
@@ -84,7 +84,7 @@ const Footer = () => {
             <FiMap />
             <div>
               <h4>Location</h4>
-              <p>Jabalpur, India</p>
+              <p>Jawa, Rewa Madhya Pradesh</p>
             </div>
           </div>
         </div>
@@ -93,7 +93,7 @@ const Footer = () => {
 
       {/* BOTTOM */}
       <div className="footer-bottom">
-        <p>© 2026 SkillStack. All Rights Reserved</p>
+        <p>© 2026 Climax Academy. All Rights Reserved</p>
       </div>
 
     </footer>

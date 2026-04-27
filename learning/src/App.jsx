@@ -13,6 +13,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Contact from "./pages/Contact";
 
 function Layout() {
   const location = useLocation();
@@ -31,6 +32,7 @@ function Layout() {
         <Route path="/courses" element={<Courses />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/contact" element={<Contact/>}/>
 
         {/* ✅ USER DASHBOARD */}
         <Route

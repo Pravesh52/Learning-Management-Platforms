@@ -1,74 +1,70 @@
 import React from 'react';
 import '../styles/Features.css';
-import Courses from './Courses';
 
 const Features = () => {
   const featureData = [
     {
       title: "Learn More Anywhere",
       icon: "📖",
-      desc: "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor ut labore."
+      desc: "Access high-quality learning materials anytime and anywhere, allowing students to study at their own pace with complete flexibility."
     },
     {
       title: "Expert Instructor",
       icon: "❤️",
-      desc: "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor ut labore."
+      desc: "Learn from experienced and highly qualified instructors who provide real-world knowledge and practical insights."
     },
     {
       title: "Team Management",
       icon: "👤",
-      desc: "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor ut labore."
+      desc: "Efficiently manage student groups, track performance, and collaborate with ease through our smart management system."
     },
     {
-      title: "Course Planing",
+      title: "Course Planning",
       icon: "👁️",
-      desc: "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor ut labore."
+      desc: "Well-structured course planning that ensures step-by-step learning with clear goals and organized content delivery."
     },
     {
       title: "Teacher Monitoring",
       icon: "💡",
-      desc: "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor ut labore."
+      desc: "Monitor teaching activities, evaluate performance, and ensure quality education through advanced tracking tools."
     },
     {
       title: "24/7 Strong Support",
       icon: "✉️",
-      desc: "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor ut labore."
+      desc: "Get continuous support anytime you need, with a dedicated team ready to solve your queries and guide you."
     }
   ];
 
   return (
     <>
-    <div>
-    <section className="features-container">
-      <div className="features-header">
-        <div className="sub-title-wrapper">
-          <span className="sub-title">WHY CHOOSE SkillStack</span>
-          <div className="title-line"></div>
-        </div>
-        <h2 className="main-title">
-          Find The <span className="highlight">Best Features</span> Of SkillStack
-        </h2>
-      </div>
-
-      <div className="features-grid">
-        {featureData.map((item, index) => (
-          <div className="feature-card" key={index}>
-            <div className="card-header">
-              <div className="icon-circle">
-                <span className="icon-placeholder">{item.icon}</span>
-              </div>
-              <h3 className="card-title">{item.title}</h3>
+      <div>
+        <section className="features-container">
+          <div className="features-header">
+            <div className="sub-title-wrapper">
+              <span className="sub-title">WHY CHOOSE Climax Academy</span>
+              <div className="title-line"></div>
             </div>
-            <p className="card-desc">{item.desc}</p>
+            <h2 className="main-title">
+              Find The <span className="highlight">Best Features</span> Of Climax Academy
+            </h2>
           </div>
-        ))}
-      </div>
-    </section>
-    </div>
-    
-    <Courses/>
-    </>
 
+          <div className="features-grid">
+            {featureData.map((item, index) => (
+              <div className="feature-card" key={index}>
+                <div className="card-header">
+                  <div className="icon-circle">
+                    <span className="icon-placeholder">{item.icon}</span>
+                  </div>
+                  <h3 className="card-title">{item.title}</h3>
+                </div>
+                <p className="card-desc">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </>
   );
 };
 

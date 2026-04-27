@@ -3,6 +3,7 @@ import "../styles/Home.css";
 import studentImg from "../assets/student.png";
 import Pages from "./Pages";
 import Courses from "./Courses";
+import Features from "./Features";
 const Home = () => {
   return (
     <>
@@ -12,7 +13,7 @@ const Home = () => {
           <h1>
             Better <span className="green">Learning</span><br />
             <span className="green">Future</span> Starts<br />
-            With SkillStack
+            With Climax Academy
           </h1>
 
           <p>
@@ -99,6 +100,7 @@ const Home = () => {
 
       <Pages/>
       <Courses/>
+      <Features/>
 
       
     </>

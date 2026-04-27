@@ -1,59 +1,54 @@
 import React from "react";
 import "../styles/Blogs.css";
 import { FaFacebookF, FaTwitter, FaLinkedinIn } from "react-icons/fa";
-import expertImg from "../assets/expertimage.png";
 
 const blogsData = [
   {
     id: 1,
-    name: "Daniel Miller",
-    role: "Logo Expert",
+    name: "Shailendra Mishra",
+    role: "Chemistry Expert",
     courses: 3,
     students: 3,
-    image: expertImg,
     social: {
-      facebook: "https://facebook.com/masum",
-      twitter: "https://twitter.com/masum",
-      linkedin: "https://linkedin.com/in/masum",
+      facebook: "#",
+      twitter: "#",
+      linkedin: "#",
     },
   },
   {
     id: 2,
-    name: "Masum Billah",
-    role: "Developer",
+    name: "Gyan Prakash Shukla",
+    role: "Physics Expert",
     courses: 6,
     students: 5,
-    image: expertImg,
     social: {
-      facebook: "https://facebook.com/masum",
-      twitter: "https://twitter.com/masum",
-      linkedin: "https://linkedin.com/in/masum",
+      facebook: "#",
+      twitter: "#",
+      linkedin: "#",
     },
   },
   {
     id: 3,
-    name: "Kenneth Renteria",
-    role: "Marketer",
-    courses: 0,
-    students: 0,
-    image: expertImg,
+    name: "Kamta Mishra",
+    role: "Physics Expert",
+    courses: 2,
+    students: 4,
     social: {
-      facebook: "https://facebook.com/masum",
-      twitter: "https://twitter.com/masum",
-      linkedin: "https://linkedin.com/in/masum",
+      facebook: "#",
+      twitter: "#",
+      linkedin: "#",
     },
   },
   {
     id: 4,
-    name: "Richard Hood",
-    role: "UI UX Designer",
-    courses: 2,
-    students: 0,
-    image: expertImg,
+    name: "Sanjay Chaturvedi",
+    role: "Mathematics Expert",
+    courses: 5,
+    students: 8,
     social: {
-      facebook: "https://facebook.com/masum",
-      twitter: "https://twitter.com/masum",
-      linkedin: "https://linkedin.com/in/masum",
+      facebook: "#",
+      twitter: "#",
+      linkedin: "#",
     },
   },
 ];
@@ -61,27 +56,28 @@ const blogsData = [
 const Blogs = () => {
   return (
     <section className="blogs">
-      <h4 className="sub-title">TEAM MEMBER</h4>
-      <h2 className="main-title">
-        Our Expert <span>Instructors</span>
-      </h2>
+      
+      {/* HEADER */}
+      <div className="blogs-header">
+        <h4 className="sub-title">TEAM MEMBER ______</h4>
+        <h2 className="main-title">
+          Our Expert <span>Instructors</span>
+        </h2>
+      </div>
 
+      {/* CARDS */}
       <div className="blog-container">
         {blogsData.map((item) => (
           <div className="blog-card" key={item.id}>
-            
-            <div className="img-box">
-              <img src={item.image} alt="instructor" />
-            </div>
 
             <div className="card-content">
               <h3>{item.name}</h3>
               <p className="role">{item.role}</p>
 
-              <div className="stats">
-                <span>📚 {item.courses}</span>
-                <span>👤 {item.students}</span>
-              </div>
+              {/* <div className="stats">
+                <span>📚 {item.courses} Courses</span>
+                <span>👤 {item.students} Students</span>
+              </div> */}
 
               <div className="socials">
                 <a href={item.social.facebook} target="_blank" rel="noreferrer">
@@ -99,6 +95,7 @@ const Blogs = () => {
           </div>
         ))}
       </div>
+
     </section>
   );
 };

@@ -1,58 +1,116 @@
-.signup-container {
-  height: 100vh;
+/* OVERLAY (Background Blur) */
+.signup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  backdrop-filter: blur(6px);
+  background: rgba(0,0,0,0.4);
+
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg,  #74f498, #1f3460);
+
+  z-index: 999;
 }
 
-.signup-box {
-  background: white;
-  padding: 40px;
-  border-radius: 10px;
+/* MODAL BOX */
+.signup-modal {
+  background: #fff;
+  padding: 30px;
   width: 380px;
+  border-radius: 12px;
   text-align: center;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  position: relative;
+
+  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+  animation: popup 0.3s ease;
 }
 
-.signup-box h2 {
-  margin-bottom: 10px;
-  color: #1f3460;
+/* ANIMATION */
+@keyframes popup {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
-.signup-box p {
-  color: #666;
-  margin-bottom: 20px;
+/* CLOSE BUTTON */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
 }
 
-.signup-box input {
+.close-btn:hover {
+  color: red;
+}
+
+/* HEADINGS */
+.signup-modal h2 {
+  margin-bottom: 5px;
+}
+
+.signup-modal p {
+  color: gray;
+  margin-bottom: 15px;
+}
+
+/* INPUT */
+.signup-modal input {
   width: 100%;
-  padding: 12px;
-  margin: 10px 0;
+  padding: 10px;
+  margin: 8px 0;
   border-radius: 6px;
   border: 1px solid #ccc;
 }
 
-.signup-box button {
+/* BUTTON */
+.signup-modal button[type="submit"] {
   width: 100%;
-  padding: 12px;
-  background: #4e73df;
+  padding: 10px;
+  background: #6366f1;
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  margin-top: 10px;
 }
 
-.signup-box button:hover {
-  background: #2e59d9;
+.signup-modal button:hover {
+  background: #4f46e5;
 }
 
+/* TEXT */
 .switch-text {
-  margin-top: 15px;
+  margin-top: 10px;
+  font-size: 14px;
 }
 
 .switch-text span {
-  color: #1f3460;
-  cursor: pointer;
+  color: #6366f1;
   font-weight: bold;
+  cursor: pointer;
+}
+
+/* SUCCESS / ERROR */
+.success {
+  color: green;
+  font-size: 13px;
+}
+
+.error {
+  color: red;
+  font-size: 13px;
 }

@@ -1,101 +1,89 @@
+/* SECTION */
 .blogs {
-  padding: 60px 40px;
+  padding: 70px 50px;
   background: #f8fafc;
-  text-align: center;
 }
 
+/* HEADER RIGHT ALIGN */
+.blogs-header {
+  text-align: left;
+  margin-bottom: 50px;
+  padding-right: 10px;
+}
+
+/* SUB TITLE */
 .sub-title {
   color: #6366f1;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 40px;
+  letter-spacing: 1px;
 }
 
+/* MAIN TITLE */
 .main-title {
-  font-size: 32px;
-  margin-bottom: 40px;
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.main-title span {
+  color: #6366f1;
 }
 
 /* GRID */
 .blog-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
 }
 
 /* CARD */
 .blog-card {
-  background: white;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 25px;
+  text-align: center;
+
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
   transition: all 0.3s ease;
   cursor: pointer;
-
-  display: flex;              /* 🔥 IMPORTANT FIX */
-  flex-direction: column;     /* 🔥 vertical layout */
 }
 
-/* 🔥 HOVER */
+/* HOVER EFFECT */
 .blog-card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-}
-
-/* IMAGE */
-.img-box {
-  overflow: hidden;
-}
-
-.img-box img {
-  width: 100%;
-  transition: 0.4s;
-}
-
-.blog-card:hover img {
-  transform: scale(1.1);
+  box-shadow: 0 18px 35px rgba(0,0,0,0.15);
 }
 
 /* CONTENT */
-.card-content {
-  padding: 20px;
-  text-align: center;
-
-  display: flex;              /* 🔥 FIX */
-  flex-direction: column;
-  align-items: center;        /* 🔥 CENTER EVERYTHING */
-}
-
-/* TEXT */
 .card-content h3 {
+  font-size: 20px;
   margin-bottom: 5px;
 }
 
 .role {
-  color: gray;
-  margin-bottom: 10px;
+  color: #6b7280;
+  margin-bottom: 15px;
+  font-size: 14px;
 }
 
-/* 🔥 STATS FINAL FIX */
+/* STATS */
 .stats {
   display: flex;
   justify-content: center;
-  align-items: center;
-  text-align: center;
   gap: 12px;
-  margin: 15px 90px;
+  margin-bottom: 18px;
 }
 
-/* BADGE STYLE */
 .stats span {
-  background: #e2e8f0;
+  background: #eef2ff;
+  color: #4338ca;
   padding: 6px 14px;
   border-radius: 20px;
+  font-size: 13px;
   font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 5px;
 }
 
-/* SOCIAL */
+/* SOCIAL ICONS */
 .socials {
   display: flex;
   justify-content: center;
@@ -107,18 +95,21 @@
   height: 38px;
   background: #6366f1;
   color: white;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   border-radius: 50%;
-  transition: 0.3s;
+  transition: all 0.3s ease;
 }
 
+/* HOVER SOCIAL */
 .socials a:hover {
   background: #4f46e5;
+  transform: scale(1.1);
 }
 
-.socials a svg {
-  font-size: 16px;
-  color: white;
+.socials svg {
+  font-size: 15px;
 }
