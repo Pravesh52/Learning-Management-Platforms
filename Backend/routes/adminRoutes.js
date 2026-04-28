@@ -9,6 +9,7 @@ const { protect, adminOnly } = require("../middleware/authMiddleware");
 router.get("/dashboard", protect, adminOnly, admin.getDashboard);
 
 router.get("/users", protect, adminOnly, admin.getUsers);
+router.get("/students", protect, adminOnly, admin.getStudents);
 router.post("/users", protect, adminOnly, admin.createUser);
 router.put("/users/:id", protect, adminOnly, admin.updateUser);
 router.delete("/users/:id", protect, adminOnly, admin.deleteUser);

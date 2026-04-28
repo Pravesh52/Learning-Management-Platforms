@@ -1,23 +1,20 @@
 const User = require("../models/user");
 const Course = require("../models/course");
 
-// DASHBOARD
+
+// ================= DASHBOARD =================
 exports.getDashboard = async (req, res) => {
   try {
-    const users = await User.countDocuments();
-    const students = await User.countDocuments({ role: "student" });
-    const courses = await Course.countDocuments();
+    const totalUsers = await User.countDocuments();
+    const totalStudents = await User.countDocuments({ role: "student" });
+    const totalTeachers = await User.countDocuments({ role: "teacher" });
+    const totalCourses = await Course.countDocuments();
 
     res.json({
-      users,
-      students,
-      courses,
-      revenue: 15000,
-      activities: [
-        "New student registered",
-        "Course React added",
-        "Admin logged in"
-      ]
+      totalUsers,
+      totalStudents,
+      totalTeachers,
+      totalCourses
     });
 
   } catch (err) {
@@ -25,35 +22,71 @@ exports.getDashboard = async (req, res) => {
   }
 };
 
-// USERS
+
+// ================= GET ALL USERS =================
 exports.getUsers = async (req, res) => {
-  const users = await User.find();
-  res.json(users);
+  try {
+    const users = await User.find().select("name email role");
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
+
+// ================= GET ONLY STUDENTS =================
+exports.getStudents = async (req, res) => {
+  try {
+    const students = await User.find({ role: "student" })
+      .select("name email");
+
+    res.json(students);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+// ================= CREATE USER =================
 exports.createUser = async (req, res) => {
-  const user = await User.create(req.body);
-  res.json(user);
+  try {
+    const user = await User.create(req.body);
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
+
+// ================= UPDATE USER =================
 exports.updateUser = async (req, res) => {
-  const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
-  res.json(user);
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
+
+// ================= DELETE USER =================
 exports.deleteUser = async (req, res) => {
-  await User.findByIdAndDelete(req.params.id);
-  res.json({ message: "Deleted" });
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ message: "User Deleted Successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 
-// GRAPH DATA
+// ================= ANALYTICS =================
 exports.getAnalytics = async (req, res) => {
   try {
-    const User = require("../models/user");
-    const Course = require("../models/course");
-
-    // 🔹 Monthly user growth
     const users = await User.aggregate([
       {
         $group: {
@@ -64,12 +97,11 @@ exports.getAnalytics = async (req, res) => {
       { $sort: { "_id": 1 } }
     ]);
 
-    // 🔹 Course performance (dummy progress)
     const courses = await Course.find();
 
     const courseStats = courses.map(c => ({
       name: c.title,
-      students: Math.floor(Math.random() * 100) + 10 // demo data
+      students: Math.floor(Math.random() * 100) + 10
     }));
 
     res.json({
