@@ -12,6 +12,7 @@ const Signup = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    mobilenumber:"",
     password: "",
     confirmPassword: ""
   });
@@ -45,6 +46,7 @@ const Signup = () => {
         {
           name: formData.name,
           email: formData.email,
+          mobilenumber:formData.mobilenumber,
           password: formData.password
         }
       );
@@ -94,6 +96,17 @@ const Signup = () => {
             value={formData.email}
             onChange={handleChange}
             required
+          />
+
+          <input
+
+          type="number"
+          name="mobilenumber"
+          placeholder="Enter Mobile Number"
+          value={formData.mobilenumber}
+          onChange={handleChange}
+          required
+
           />
 
           <input

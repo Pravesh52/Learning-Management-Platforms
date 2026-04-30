@@ -35,12 +35,24 @@ exports.getUsers = async (req, res) => {
 
 
 // ================= GET ONLY STUDENTS =================
+// exports.getStudents = async (req, res) => {
+//   try {
+//     const students = await User.find({ role: "student" })
+//       .select("name email");
+
+//     res.json(students);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
 exports.getStudents = async (req, res) => {
   try {
     const students = await User.find({ role: "student" })
-      .select("name email");
+      .select("name email mobilenumber"); 
 
     res.json(students);
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
