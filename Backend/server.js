@@ -69,8 +69,8 @@ app.use(express.json());
 
 // ================= STATIC FOLDER =================
 app.use(
-  "/uploads",
-  express.static(path.join(__dirname, "uploads"))
+  "/upload",
+  express.static(path.join(__dirname, "upload"))
 );
 
 
@@ -80,7 +80,7 @@ app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/courses", require("./routes/courseRoutes"));
 
 app.use("/api/auth", require("./routes/authRoutes"));
-
+console.log(require("./routes/pdfRoutes"));
 app.use("/api/pdfs", require("./routes/pdfRoutes"));
 
 

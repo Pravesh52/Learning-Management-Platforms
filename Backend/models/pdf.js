@@ -9,7 +9,8 @@ const pdfSchema = new mongoose.Schema(
 
     course: {
       type: String,
-      required: true,
+      required: false,  // ✅ CHANGED: Made optional
+      default: "General", // ✅ ADDED: Default value
     },
 
     pdf: {

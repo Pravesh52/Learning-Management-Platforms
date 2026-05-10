@@ -7,6 +7,7 @@ const multer = require("multer");
 const path = require("path");
 
 const PDF = require("../models/pdf");
+console.log("PDF ROUTE LOADED");
 
 
 // ================= MULTER STORAGE =================
@@ -15,7 +16,7 @@ const storage = multer.diskStorage({
 
   destination: function (req, file, cb) {
 
-    cb(null, "uploads/");
+    cb(null, "upload/");
 
   },
 
@@ -30,14 +31,14 @@ const storage = multer.diskStorage({
 
 });
 
-const upload = multer({ storage });
+const uploads = multer({ storage });
 
 
 // ================= UPLOAD PDF =================
 
 router.post(
   "/upload",
-  upload.single("pdf"),
+  uploads.single("pdf"),
   async (req, res) => {
 
     try {
@@ -46,7 +47,9 @@ router.post(
 
         title: req.body.title,
 
-        file: req.file.filename,
+        pdf: req.file.filename,  // ✅ FIXED: Changed from 'file' to 'pdf'
+
+        course: req.body.course || "General",  // ✅ ADDED: Course field with default
 
       });
 
@@ -59,6 +62,8 @@ router.post(
       });
 
     } catch (error) {
+
+      console.log("ERROR:", error);  // ✅ ADDED: Better error logging
 
       res.status(500).json({
         success: false,
@@ -92,5 +97,7 @@ router.get("/", async (req, res) => {
   }
 
 });
+
+
 
 module.exports = router;
