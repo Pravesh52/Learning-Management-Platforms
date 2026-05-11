@@ -311,7 +311,6 @@ const AdminDashboard = () => {
           </>
         )}
 
-        {/* ================= PDF SECTION ================= */}
         {activeTab === "pdf" && (
           <>
             <h2>Upload PDF</h2>
@@ -341,32 +340,42 @@ const AdminDashboard = () => {
               <button onClick={uploadPDF}>Upload PDF</button>
             </div>
 
-            {/* PDF LIST */}
-            <div className="course-list">
-              {pdfs.length > 0 ? (
-                pdfs.map((pdf) => (
-                  <div className="course-card" key={pdf._id}>
-                    <h3>{pdf.title}</h3>
-                    <p>Course: {pdf.course || "General"}</p>
-                    <p>Study Material PDF</p>
-                    {/* ✅ server.js ka static path "/upload" se match karta hai */}
-                    <a
-                      href={`http://localhost:5000/upload/${pdf.pdf}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <button>View PDF</button>
-                    </a>
-                  </div>
-                ))
-              ) : (
-                <p>No PDFs Uploaded</p>
-              )}
-            </div>
+           {/* PDF LIST */}
+<div className="pdf-list">
+  {pdfs.length > 0 ? (
+    pdfs.map((pdf) => (
+      <div className="pdf-card" key={pdf._id}>
+        <h3>{pdf.title}</h3>
+
+        <p>
+          Course: {pdf.course || "General"}
+        </p>
+
+        <p>Study Material PDF</p>
+
+        <a
+          href={`http://localhost:5000/upload/${pdf.pdf}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <button>View PDF</button>
+        </a>
+
+        <button className="send-btn">
+          Send Student Dashboard
+        </button>
+
+      </div>
+    ))
+  ) : (
+    <p>No PDFs Uploaded</p>
+  )}
+</div>
           </>
         )}
 
       </div>
+        {/* ================= PDF SECTION ================= */}
     </div>
   );
 };
