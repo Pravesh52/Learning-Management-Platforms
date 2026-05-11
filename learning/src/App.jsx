@@ -14,6 +14,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Contact from "./pages/Contact";
+// import Notification from "./pages/admin/Notification";
 
 function Layout() {
   const location = useLocation();
@@ -51,8 +52,13 @@ function Layout() {
             <ProtectedRoute role="admin">
               <AdminDashboard />
             </ProtectedRoute>
-          }
+          } 
         />
+          <Route
+        path="/Notification"
+        element={<Notification />}
+      />
+   
       </Routes>
 
       {!hideLayout && <Footer />}

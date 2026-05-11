@@ -430,3 +430,117 @@ body {
   background: #16a34a;
   color: white;
 }
+
+/* Notification */
+
+.notification{
+    width: 100%;
+    max-width: 600px;
+    
+    margin-top: 20px;
+    
+    padding: 25px;
+
+    background: #ffffff;
+
+    border-radius: 12px;
+
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+}
+
+
+/* INPUT */
+
+.notification input{
+
+    width: 100%;
+
+    padding: 14px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 8px;
+
+    outline: none;
+
+    font-size: 16px;
+
+    transition: 0.3s;
+}
+
+.notification input:focus{
+
+    border-color: #4f46e5;
+
+    box-shadow: 0 0 5px rgba(79,70,229,0.3);
+}
+
+
+
+/* TEXTAREA */
+
+.notification textarea{
+
+    width: 100%;
+
+    height: 150px;
+
+    padding: 14px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 8px;
+
+    outline: none;
+
+    resize: none;
+
+    font-size: 16px;
+
+    transition: 0.3s;
+}
+
+.notification textarea:focus{
+
+    border-color: #4f46e5;
+
+    box-shadow: 0 0 5px rgba(79,70,229,0.3);
+}
+
+
+
+/* BUTTON */
+
+.notification button{
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #4f46e5;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+.notification button:hover{
+
+    background: #4338ca;
+
+    transform: translateY(-2px);
+}
