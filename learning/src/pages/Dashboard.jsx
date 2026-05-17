@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "../styles/Dashboard.css";
 import { useNavigate } from "react-router-dom";
 
@@ -7,14 +7,25 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
-  // 🔥 LOGOUT FUNCTION
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-
-    navigate("/"); // ✅ direct home page
+    navigate("/");
   };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const renderContent = () => {
     if (activeTab === "dashboard") {
@@ -39,49 +50,14 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="section">
-            <h2>My Tasks</h2>
-            <ul>
-              <li>✔ Complete React Project</li>
-              <li>✔ Watch Node.js Lecture</li>
-              <li>✔ Revise MongoDB</li>
-            </ul>
-          </div>
-
-          <div className="section">
-            <h2>Continue Learning</h2>
-            <div className="course-list">
-              <div className="course-card">
-                <h4>React Development</h4>
-                <p>Progress: 60%</p>
-              </div>
-              <div className="course-card">
-                <h4>Node.js Backend</h4>
-                <p>Progress: 40%</p>
-              </div>
-              <div className="course-card">
-                <h4>MongoDB Mastery</h4>
-                <p>Progress: 20%</p>
-              </div>
-            </div>
-          </div>
+          
         </>
       );
     }
 
     if (activeTab === "courses") return <h2>Courses Section</h2>;
-    if (activeTab === "progress") return <h2>Progress Section</h2>;
     if (activeTab === "messages") return <h2>Messages Section</h2>;
-
-    if (activeTab === "settings") {
-      return (
-        <div className="section">
-          <h2>Profile</h2>
-          <p>Name: {user?.name}</p>
-          <p>Email: {user?.email}</p>
-        </div>
-      );
-    }
+    if(activeTab === "notes") return <h2>NOtes Section</h2>
   };
 
   return (
@@ -89,48 +65,77 @@ const Dashboard = () => {
 
       {/* Sidebar */}
       <div className="sidebar">
-        <h2 className="logo">SkillStack</h2>
-
+        <h2 className="logo">Climax Academy</h2>
         <ul>
-          <li onClick={() => setActiveTab("dashboard")} className={activeTab==="dashboard" ? "active" : ""}>Dashboard</li>
-          <li onClick={() => setActiveTab("courses")} className={activeTab==="courses" ? "active" : ""}>Courses</li>
-          <li onClick={() => setActiveTab("progress")} className={activeTab==="progress" ? "active" : ""}>Progress</li>
-          <li onClick={() => setActiveTab("messages")} className={activeTab==="messages" ? "active" : ""}>Messages</li>
-          <li onClick={() => setActiveTab("settings")} className={activeTab==="settings" ? "active" : ""}>Settings</li>
+          <li
+            onClick={() => setActiveTab("dashboard")}
+            className={activeTab === "dashboard" ? "active" : ""}
+          >
+            Dashboard
+          </li>
+          <li
+            onClick={() => setActiveTab("courses")}
+            className={activeTab === "courses" ? "active" : ""}
+          >
+            Courses
+          </li>
+          <li
+            onClick={() => setActiveTab("messages")}
+            className={activeTab === "messages" ? "active" : ""}
+          >
+            Messages
+          </li>
+
+           <li
+            onClick={() => setActiveTab("notes")}
+            className={activeTab === "notes" ? "active" : ""}
+          >
+            Notes 
+          </li>
         </ul>
       </div>
 
       {/* Main */}
       <div className="main-content">
 
-        {/* 🔥 HEADER */}
+        {/* Header */}
         <div className="header">
           <h1>Welcome, {user?.name} 👋</h1>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            
-            {/* PROFILE */}
-            <img 
-              src={`https://ui-avatars.com/api/?name=${user?.name}`} 
+          {/* Profile with Dropdown */}
+          <div className="profile-wrapper" ref={dropdownRef}>
+            <img
+              src={`https://ui-avatars.com/api/?name=${user?.name}`}
               alt="profile"
-              style={{ width: "40px", borderRadius: "50%" }}
+              className="profile-avatar"
+              onMouseEnter={() => setDropdownOpen(true)}
+              onClick={() => setDropdownOpen((prev) => !prev)}
             />
 
-            {/* 🔥 LOGOUT BUTTON */}
-            <button
-              onClick={handleLogout}
-              style={{
-                padding: "8px 15px",
-                background: "#ef4444",
-                color: "white",
-                border: "none",
-                borderRadius: "6px",
-                cursor: "pointer"
-              }}
-            >
-              Logout
-            </button>
-
+            {dropdownOpen && (
+              <div
+                className="profile-dropdown"
+                onMouseLeave={() => setDropdownOpen(false)}
+              >
+                <p className="dropdown-email">{user?.email}</p>
+                <hr />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    setDropdownOpen(false);
+                    // navigate("/settings");
+                  }}
+                >
+                  ⚙️ Settings
+                </button>
+                <button
+                  className="dropdown-item logout"
+                  onClick={handleLogout}
+                >
+                  🚪 Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
