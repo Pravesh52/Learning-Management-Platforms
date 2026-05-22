@@ -13,42 +13,40 @@ const Dashboard = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // ─── Data States ───────────────────────────────────────────
   const [courses, setCourses] = useState([]);
   const [messages, setMessages] = useState([]);
   const [pdfs, setPdfs] = useState([]);
+  const [liveClasses, setLiveClasses] = useState([]);
 
-  // ─── Loading / Error States ────────────────────────────────
   const [loadingCourses, setLoadingCourses] = useState(false);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [loadingPdfs, setLoadingPdfs] = useState(false);
+  const [loadingLiveClasses, setLoadingLiveClasses] = useState(false);
+
   const [errorCourses, setErrorCourses] = useState("");
   const [errorMessages, setErrorMessages] = useState("");
   const [errorPdfs, setErrorPdfs] = useState("");
+  const [errorLiveClasses, setErrorLiveClasses] = useState("");
 
-  // ─── Auth Headers ──────────────────────────────────────────
   const authHeaders = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
   };
 
-  // ─── Fetch Courses ─────────────────────────────────────────
   const fetchCourses = async () => {
     setLoadingCourses(true);
     setErrorCourses("");
     try {
       const res = await fetch(`${BASE_URL}/api/courses`, { headers: authHeaders });
       const data = await res.json();
-      const published = data.filter((c) => c.status === "published");
-      setCourses(published);
-    } catch (err) {
-      setErrorCourses("Courses load nahi hue. Server check karo.");
+      setCourses(data.filter((c) => c.status === "published"));
+    } catch {
+      setErrorCourses("Could not load courses. Please try again.");
     } finally {
       setLoadingCourses(false);
     }
   };
 
-  // ─── Fetch Messages (Notifications) ───────────────────────
   const fetchMessages = async () => {
     setLoadingMessages(true);
     setErrorMessages("");
@@ -56,14 +54,13 @@ const Dashboard = () => {
       const res = await fetch(`${BASE_URL}/api/notifications/all`, { headers: authHeaders });
       const data = await res.json();
       setMessages(data.data || []);
-    } catch (err) {
-      setErrorMessages("Messages load nahi hue. Server check karo.");
+    } catch {
+      setErrorMessages("Could not load messages. Please try again.");
     } finally {
       setLoadingMessages(false);
     }
   };
 
-  // ─── Fetch PDFs ────────────────────────────────────────────
   const fetchPdfs = async () => {
     setLoadingPdfs(true);
     setErrorPdfs("");
@@ -71,28 +68,34 @@ const Dashboard = () => {
       const res = await fetch(`${BASE_URL}/api/pdfs`, { headers: authHeaders });
       const data = await res.json();
       setPdfs(data);
-    } catch (err) {
-      setErrorPdfs("PDFs load nahi hue. Server check karo.");
+    } catch {
+      setErrorPdfs("Could not load PDFs. Please try again.");
     } finally {
       setLoadingPdfs(false);
     }
   };
 
-  // ─── Tab change pe fetch ───────────────────────────────────
+  const fetchLiveClasses = async () => {
+    setLoadingLiveClasses(true);
+    setErrorLiveClasses("");
+    try {
+      const res = await fetch(`${BASE_URL}/api/liveclasses`, { headers: authHeaders });
+      const data = await res.json();
+      setLiveClasses(data || []);
+    } catch {
+      setErrorLiveClasses("Could not load live classes. Please try again.");
+    } finally {
+      setLoadingLiveClasses(false);
+    }
+  };
+
   useEffect(() => {
     if (activeTab === "courses" && courses.length === 0) fetchCourses();
     if (activeTab === "messages" && messages.length === 0) fetchMessages();
     if (activeTab === "pdfs" && pdfs.length === 0) fetchPdfs();
+    if (activeTab === "liveclasses" && liveClasses.length === 0) fetchLiveClasses();
   }, [activeTab]);
 
-  // ─── Logout ────────────────────────────────────────────────
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/");
-  };
-
-  // ─── Close dropdown on outside click ──────────────────────
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -103,56 +106,36 @@ const Dashboard = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ─── Date Format Helper ────────────────────────────────────
-  const formatDate = (dateStr) => {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString("en-IN", {
-      day: "2-digit", month: "short", year: "numeric",
-    });
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/");
   };
 
-  // ══════════════════════════════════════════════════════════
-  //  TAB CONTENT RENDERERS
-  // ══════════════════════════════════════════════════════════
+  const formatDate = (dateStr) =>
+    new Date(dateStr).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
 
   const renderDashboard = () => (
-    <>
-      <div className="stats">
-        <div className="stat-card"><p>Enrolled Courses</p><h2>12</h2></div>
-        <div className="stat-card"><p>In Progress</p><h2>7</h2></div>
-        <div className="stat-card"><p>Completed</p><h2>5</h2></div>
-        <div className="stat-card"><p>Pending Tasks</p><h2>24</h2></div>
-      </div>
-
-      {/* <div className="section">
-        <h2>My Tasks</h2>
-        <ul>
-          <li>✔ Complete React Project</li>
-          <li>✔ Watch Node.js Lecture</li>
-          <li>✔ Revise MongoDB</li>
-        </ul>
-      </div>
-
-      <div className="section">
-        <h2>Continue Learning</h2>
-        <div className="course-list">
-          <div className="course-card"><h4>React Development</h4><p>Progress: 60%</p></div>
-          <div className="course-card"><h4>Node.js Backend</h4><p>Progress: 40%</p></div>
-          <div className="course-card"><h4>MongoDB Mastery</h4><p>Progress: 20%</p></div>
-        </div>
-      </div> */}
-    </>
+    <div className="stats">
+      <div className="stat-card"><p>Enrolled Courses</p><h2>12</h2></div>
+      <div className="stat-card"><p>In Progress</p><h2>7</h2></div>
+      <div className="stat-card"><p>Completed</p><h2>5</h2></div>
+      <div className="stat-card"><p>Pending Tasks</p><h2>24</h2></div>
+    </div>
   );
 
   const renderCourses = () => (
     <div className="section">
       <h2>Available Courses</h2>
 
-      {loadingCourses && <p className="loading-text">⏳ Courses load ho rahe hain...</p>}
+      {loadingCourses && <p className="loading-text">Loading courses...</p>}
       {errorCourses && <p className="error-text">❌ {errorCourses}</p>}
-
       {!loadingCourses && !errorCourses && courses.length === 0 && (
-        <p className="empty-text">Abhi koi published course nahi hai.</p>
+        <p className="empty-text">No published courses available right now.</p>
       )}
 
       {!loadingCourses && courses.length > 0 && (
@@ -178,11 +161,10 @@ const Dashboard = () => {
     <div className="section">
       <h2>Messages from Admin</h2>
 
-      {loadingMessages && <p className="loading-text">⏳ Messages load ho rahe hain...</p>}
+      {loadingMessages && <p className="loading-text">Loading messages...</p>}
       {errorMessages && <p className="error-text">❌ {errorMessages}</p>}
-
       {!loadingMessages && !errorMessages && messages.length === 0 && (
-        <p className="empty-text">Abhi koi message nahi hai.</p>
+        <p className="empty-text">No messages yet.</p>
       )}
 
       {!loadingMessages && messages.length > 0 && (
@@ -203,13 +185,12 @@ const Dashboard = () => {
 
   const renderPdfs = () => (
     <div className="section">
-      <h2>Study Materials (PDFs)</h2>
+      <h2>Study Materials</h2>
 
-      {loadingPdfs && <p className="loading-text">⏳ PDFs load ho rahe hain...</p>}
+      {loadingPdfs && <p className="loading-text">Loading PDFs...</p>}
       {errorPdfs && <p className="error-text">❌ {errorPdfs}</p>}
-
       {!loadingPdfs && !errorPdfs && pdfs.length === 0 && (
-        <p className="empty-text">Abhi koi PDF upload nahi hui hai.</p>
+        <p className="empty-text">No study materials uploaded yet.</p>
       )}
 
       {!loadingPdfs && pdfs.length > 0 && (
@@ -237,33 +218,63 @@ const Dashboard = () => {
     </div>
   );
 
+  const renderLiveClasses = () => (
+    <div className="section">
+      <h2>Live Classes</h2>
+
+      {loadingLiveClasses && <p className="loading-text">Loading live classes...</p>}
+      {errorLiveClasses && <p className="error-text">❌ {errorLiveClasses}</p>}
+      {!loadingLiveClasses && !errorLiveClasses && liveClasses.length === 0 && (
+        <p className="empty-text">No live classes scheduled right now.</p>
+      )}
+
+      {!loadingLiveClasses && liveClasses.length > 0 && (
+        <div className="course-grid">
+          {liveClasses.map((cls) => (
+            <div className="course-card-full" key={cls._id}>
+              <h3>{cls.title}</h3>
+              <div className="course-meta">
+                <span>📅 {formatDate(cls.scheduledAt)}</span>
+                <span>🕐 {cls.time}</span>
+              </div>
+              {cls.link && (
+                <a href={cls.link} target="_blank" rel="noopener noreferrer" className="enroll-btn">
+                  Join Class
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   const renderContent = () => {
     switch (activeTab) {
-      case "dashboard": return renderDashboard();
-      case "courses":   return renderCourses();
-      case "messages":  return renderMessages();
-      case "pdfs":      return renderPdfs();
-      default:          return renderDashboard();
+      case "dashboard":   return renderDashboard();
+      case "courses":     return renderCourses();
+      case "messages":    return renderMessages();
+      case "pdfs":        return renderPdfs();
+      case "liveclasses": return renderLiveClasses();
+      default:            return renderDashboard();
     }
   };
 
-  // ══════════════════════════════════════════════════════════
-  //  MAIN RENDER
-  // ══════════════════════════════════════════════════════════
+  const tabs = [
+    { id: "dashboard",   label: "🏠 Dashboard"  },
+    { id: "courses",     label: "📚 Courses"     },
+    { id: "messages",    label: "💬 Messages"    },
+    { id: "pdfs",        label: "📄 PDFs"        },
+    { id: "liveclasses", label: "🎥 Live Classes" },
+  ];
 
   return (
     <div className="dashboard-container">
 
-      {/* ── Sidebar ── */}
       <div className="sidebar">
-        <h2 className="logo">SkillStack</h2>
+        <h2 className="logo">Climax Academy</h2>
         <ul>
-          {[
-            { id: "dashboard", label: "🏠 Dashboard" },
-            { id: "courses",   label: "📚 Courses"   },
-            { id: "messages",  label: "💬 Messages"  },
-            { id: "pdfs",      label: "📄 PDFs"      },
-          ].map((tab) => (
+          {tabs.map((tab) => (
             <li
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
@@ -275,33 +286,26 @@ const Dashboard = () => {
         </ul>
       </div>
 
-      {/* ── Main Content ── */}
       <div className="main-content">
 
-        {/* Header */}
         <div className="header">
           <h1>Welcome, {user?.name} 👋</h1>
 
-          {/* Profile Dropdown */}
           <div className="profile-wrapper" ref={dropdownRef}>
             <img
               src={`https://ui-avatars.com/api/?name=${user?.name}`}
               alt="profile"
               className="profile-avatar"
-              onMouseEnter={() => setDropdownOpen(true)}
               onClick={() => setDropdownOpen((prev) => !prev)}
             />
 
             {dropdownOpen && (
-              <div
-                className="profile-dropdown"
-                onMouseLeave={() => setDropdownOpen(false)}
-              >
+              <div className="profile-dropdown" onMouseLeave={() => setDropdownOpen(false)}>
                 <p className="dropdown-email">{user?.email}</p>
                 <hr />
                 <button
                   className="dropdown-item"
-                  onClick={() => { setDropdownOpen(false); navigate("/settings"); }}
+                  onClick={() => setDropdownOpen(false)}
                 >
                   ⚙️ Settings
                 </button>
@@ -313,7 +317,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Tab Content */}
         {renderContent()}
 
       </div>
