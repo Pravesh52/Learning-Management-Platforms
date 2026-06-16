@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../styles/Dashboard.css";
 import { useNavigate } from "react-router-dom";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-const BASE_URL = "http://localhost:5000";
+// const BASE_URL = "http://localhost:5000";
 
 const Dashboard = () => {
   const user = JSON.parse(localStorage.getItem("user"));
