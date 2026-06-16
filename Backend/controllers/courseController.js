@@ -1,6 +1,6 @@
 // controllers/courseController.js
 
-const Course = require("../models/Course");
+const Course = require("../models/course");
 
 // ✅ CREATE COURSE
 exports.createCourse = async (req, res) => {
