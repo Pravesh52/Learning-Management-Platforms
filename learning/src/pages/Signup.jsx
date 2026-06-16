@@ -6,6 +6,8 @@ import "../styles/Signup.css";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+
 const Signup = () => {
   const navigate = useNavigate();
 
@@ -42,14 +44,14 @@ const Signup = () => {
       setError("");
 
       const res = await axios.post(
-        "http://localhost:5000/api/auth/signup",
-        {
-          name: formData.name,
-          email: formData.email,
-          mobilenumber:formData.mobilenumber,
-          password: formData.password
-        }
-      );
+            `${BASE_URL}/api/auth/signup`,
+            {
+              name: formData.name,
+              email: formData.email,
+              mobilenumber: formData.mobilenumber,
+              password: formData.password,
+            }
+          );
 
       setSuccess(res.data.message);
       setError("");

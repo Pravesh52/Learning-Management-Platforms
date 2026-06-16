@@ -416,10 +416,10 @@ const AdminDashboard = () => {
                     <h3>{pdf.title}</h3>
                     <p>Course: {pdf.course || "General"}</p>
                     <p>Study Material PDF</p>
-                    <a
-                      href={`http://localhost:5000/upload/${pdf.pdf}`}
-                      target="_blank"
-                      rel="noreferrer"
+                   <a
+                        href={`${BASE_URL}/upload/${pdf.pdf}`}
+                        target="_blank"
+                        rel="noreferrer"
                     >
                       <button>View PDF</button>
                     </a>
