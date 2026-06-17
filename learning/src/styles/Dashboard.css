@@ -56,7 +56,7 @@
 /* ── Header ── */
 .header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;   /* ✅ profile hamesha right mein */
   align-items: center;
   margin-bottom: 10px;
 }
@@ -124,6 +124,7 @@
 .profile-wrapper {
   position: relative;
   display: inline-block;
+  margin-left: auto;           /* ✅ always push to right */
 }
 
 .profile-avatar {
@@ -133,13 +134,15 @@
   cursor: pointer;
   border: 2px solid #e2e8f0;
   transition: border-color 0.2s;
+  display: block;
 }
 
 .profile-avatar:hover { border-color: #6366f1; }
 
 .profile-dropdown {
   position: absolute;
-  right: 0;
+  right: 0;                    /* ✅ avatar ke right edge se align */
+  left: auto;                  /* ✅ left: auto — left jaane se rokta hai */
   top: calc(100% + 8px);
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -469,8 +472,9 @@
   }
 
   .header {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 10px;
+    justify-content: flex-end;
   }
 
   .main-content {
@@ -487,6 +491,9 @@
 
   .profile-dropdown {
     min-width: 180px;
+    right: 0;
+    left: auto;
+    max-width: calc(100vw - 30px);
   }
 }
 
