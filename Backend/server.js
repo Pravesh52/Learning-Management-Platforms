@@ -6,6 +6,9 @@ const fs = require("fs");
 require("dotenv").config();
 
 const app = express();
+
+console.log("SUPABASE_URL =", process.env.SUPABASE_URL);
+console.log("SUPABASE_ANON_KEY =", process.env.SUPABASE_ANON_KEY ? "Found" : "Missing");
 console.log("SERVER FILE RUNNING");
 
 // ✅ Auto create upload folders
