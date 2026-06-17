@@ -1,3 +1,4 @@
+/* ================= FEATURES ================= */
 :root {
   --primary-green: #2ecc71;
   --dark-blue: #0a1d37;
@@ -13,7 +14,7 @@
   font-family: 'Arial', sans-serif;
 }
 
-/* Header Styling */
+/* Header */
 .features-header {
   margin-bottom: 50px;
 }
@@ -50,14 +51,14 @@
   text-underline-offset: 8px;
 }
 
-/* Grid Layout */
+/* Grid */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 30px;
 }
 
-/* Card Styling */
+/* Card */
 .feature-card {
   border: 1px solid var(--card-border);
   border-radius: 12px;
@@ -67,7 +68,7 @@
 }
 
 .feature-card:hover {
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.05);
   border-color: var(--primary-green);
 }
 
@@ -108,18 +109,55 @@
   margin: 0;
 }
 
-/* Responsive Design */
+/* ================= TABLET ================= */
 @media (max-width: 992px) {
   .features-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .main-title {
+    font-size: 36px;
+  }
+
+  .features-container {
+    margin: 50px auto;
+  }
 }
 
+/* ================= MOBILE ================= */
 @media (max-width: 600px) {
   .features-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
+
   .main-title {
-    font-size: 32px;
+    font-size: 28px;
+  }
+
+  .features-container {
+    margin: 40px auto;
+    padding: 0 15px;
+  }
+
+  .features-header {
+    margin-bottom: 30px;
+  }
+
+  .feature-card {
+    padding: 25px 20px;
+  }
+
+  .icon-circle {
+    width: 52px;
+    height: 52px;
+  }
+
+  .card-title {
+    font-size: 17px;
+  }
+
+  .card-desc {
+    font-size: 14px;
   }
 }

@@ -1,3 +1,4 @@
+/* ================= HOME ================= */
 .home {
   display: flex;
   justify-content: space-between;
@@ -6,11 +7,13 @@
   min-height: 70vh;
   background: linear-gradient(to right, #dff3f0, #f8f8f8);
   font-family: Arial, sans-serif;
+  gap: 40px;
 }
 
 /* LEFT */
 .home-left {
   max-width: 50%;
+  flex: 1;
 }
 
 .home-left h1 {
@@ -27,6 +30,7 @@
   margin-top: 20px;
   color: #666;
   font-size: 16px;
+  line-height: 1.6;
 }
 
 .explore-btn {
@@ -38,12 +42,17 @@
   border-radius: 25px;
   cursor: pointer;
   font-size: 16px;
+  transition: background 0.3s;
+}
+
+.explore-btn:hover {
+  background-color: #27ae60;
 }
 
 /* RIGHT */
 .home-right {
   position: relative;
-  width: 40%;
+  flex: 1;
   display: flex;
   justify-content: center;
 }
@@ -52,6 +61,7 @@
   width: 100%;
   max-width: 400px;
   z-index: 2;
+  position: relative;
 }
 
 /* Background circle */
@@ -87,16 +97,10 @@
   color: #666;
 }
 
-.card1 {
-  top: 20px;
-  right: 0;
-}
+.card1 { top: 20px; right: 0; }
+.card2 { bottom: 40px; left: 0; }
 
-.card2 {
-  bottom: 40px;
-  left: 0;
-}
-/* FEATURES SECTION */
+/* ── FEATURES SECTION ── */
 .features {
   display: flex;
   justify-content: space-between;
@@ -124,22 +128,114 @@
   line-height: 1.5;
 }
 
-/* Button */
 .feature-btn {
   margin-top: 25px;
-  background-color: #cfe9df;   /* full background */
+  background-color: #cfe9df;
   border: none;
   padding: 12px 22px;
-  border-radius: 30px;         /* makes it full rounded */
+  border-radius: 30px;
   font-weight: 600;
   cursor: pointer;
   color: #1c2c4c;
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  transition: background 0.3s;
 }
 
-/* Remove old circle effect */
-.circle {
-  display: none;
+.feature-btn:hover {
+  background-color: #b2dfd0;
+}
+
+.circle { display: none; }
+
+/* ================= TABLET ================= */
+@media (max-width: 900px) {
+  .home {
+    padding: 40px 30px;
+    gap: 30px;
+  }
+
+  .home-left h1 {
+    font-size: 36px;
+  }
+
+  .circle-bg {
+    width: 260px;
+    height: 260px;
+  }
+
+  .features {
+    flex-direction: column;
+  }
+
+  .feature-box {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+    padding: 30px;
+  }
+
+  .feature-box:last-child {
+    border-bottom: none;
+  }
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 640px) {
+  .home {
+    flex-direction: column;
+    padding: 40px 20px;
+    min-height: auto;
+    text-align: center;
+  }
+
+  .home-left {
+    max-width: 100%;
+  }
+
+  .home-left h1 {
+    font-size: 28px;
+  }
+
+  .home-left p {
+    font-size: 14px;
+  }
+
+  .explore-btn {
+    font-size: 14px;
+    padding: 10px 22px;
+  }
+
+  .home-right {
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .home-right img {
+    max-width: 280px;
+  }
+
+  .circle-bg {
+    width: 200px;
+    height: 200px;
+    top: 20px;
+    left: 30px;
+  }
+
+  .card {
+    padding: 10px 15px;
+  }
+
+  .card h3 {
+    font-size: 13px;
+  }
+
+  .card p {
+    font-size: 11px;
+  }
+
+  .feature-box {
+    padding: 25px 20px;
+  }
 }

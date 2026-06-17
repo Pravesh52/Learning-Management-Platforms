@@ -1,3 +1,4 @@
+/* ================= FOOTER ================= */
 .footer {
   background: #0f172a;
   color: #fff;
@@ -33,6 +34,7 @@
 .footer-col ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .footer-col ul li {
@@ -61,6 +63,7 @@
 .icons {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .icons svg {
@@ -86,6 +89,7 @@
 .contact-item svg {
   font-size: 20px;
   color: #6366f1;
+  flex-shrink: 0;
 }
 
 .contact-item h4 {
@@ -106,4 +110,35 @@
   background: #020617;
   font-size: 14px;
   color: #94a3b8;
+}
+
+/* ================= TABLET ================= */
+@media (max-width: 768px) {
+  .footer-container {
+    padding: 40px 25px;
+    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 480px) {
+  .footer-container {
+    grid-template-columns: 1fr;
+    padding: 30px 20px;
+    gap: 25px;
+  }
+
+  .footer-col h3 {
+    font-size: 16px;
+  }
+
+  .logo {
+    font-size: 20px;
+  }
+
+  .footer-bottom {
+    font-size: 12px;
+    padding: 12px 15px;
+  }
 }

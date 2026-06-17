@@ -1,6 +1,7 @@
+/* ================= PAGE ================= */
 :root {
   --primary-green: #2ecc71;
-  --dark-blue: #132742; /* Deep blue used for heading */
+  --dark-blue: #132742;
   --text-gray: #777777;
   --card-border: #f0f0f0;
 }
@@ -10,53 +11,52 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 5px;
+  padding: 40px 20px;
   background-color: #ffffff;
   font-family: 'Arial', sans-serif;
+  box-sizing: border-box;
 }
 
 .content-wrapper {
   display: flex;
   max-width: 1100px;
+  width: 100%;
   gap: 50px;
   align-items: center;
 }
 
-/* Left Side: Image Masking Logic */
+/* Left Side: Image Masking */
 .image-section {
   flex: 1;
   display: flex;
   height: 500px;
-
-  gap: 15px; /* Panes ke beech ka gap */
+  gap: 15px;
 }
 
 .mask-item {
   height: 100%;
   border-radius: 10px;
-  background-size: cover; /* **MAHATTWAPOORN:** Image container ko bharegi */
+  background-size: cover;
   background-repeat: no-repeat;
 }
 
-/* Har pane ke liye specific width aur positioning */
-.mask-1 { 
-  width: 28%; 
-  background-position: left; /* Image ka left hissa dikhayega */
+.mask-1 {
+  width: 28%;
+  background-position: left;
 }
 
-.mask-2 { 
-  width: 44%; 
-  background-position: center; /* Image ka center hissa dikhayega */
-  /* center pane ko thoda upar karne ke liye */
-  transform: translateY(-20px); 
+.mask-2 {
+  width: 44%;
+  background-position: center;
+  transform: translateY(-20px);
 }
 
-.mask-3 { 
-  width: 28%; 
-  background-position: right; /* Image ka right hissa dikhayega */
+.mask-3 {
+  width: 28%;
+  background-position: right;
 }
 
-/* Right Side: Text Content Styling */
+/* Right Side */
 .text-section {
   flex: 1;
 }
@@ -69,13 +69,7 @@
   font-weight: 700;
 }
 
-.highlight-ahead {
-  color: var(--primary-green);
-  text-decoration: underline;
-  text-underline-offset: 5px;
-  text-decoration-thickness: 2px;
-}
-
+.highlight-ahead,
 .highlight-for-your {
   color: var(--primary-green);
   text-decoration: underline;
@@ -116,7 +110,7 @@
 }
 
 .mission-icon { background-color: #d2f6e4; color: #2ecc71; }
-.vision-icon { background-color: #d0f9e5; color: #2ecc71; }
+.vision-icon  { background-color: #d0f9e5; color: #2ecc71; }
 
 .info-content h3 {
   margin: 0 0 5px 0;
@@ -140,4 +134,69 @@
   font-weight: 600;
   cursor: pointer;
   margin-top: 10px;
+  transition: background 0.3s;
+}
+
+.discover-btn:hover {
+  background-color: #27ae60;
+}
+
+/* ================= TABLET ================= */
+@media (max-width: 900px) {
+  .content-wrapper {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .image-section {
+    width: 100%;
+    height: 320px;
+  }
+
+  .main-title {
+    font-size: 32px;
+  }
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 600px) {
+  .container {
+    padding: 30px 15px;
+  }
+
+  .image-section {
+    height: 220px;
+    gap: 8px;
+  }
+
+  .mask-2 {
+    transform: translateY(-10px);
+  }
+
+  .main-title {
+    font-size: 26px;
+  }
+
+  .info-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 15px;
+  }
+
+  .icon-box {
+    width: 48px;
+    height: 48px;
+  }
+
+  .info-content h3 {
+    font-size: 16px;
+  }
+
+  .discover-btn {
+    width: 100%;
+    text-align: center;
+    padding: 13px;
+    font-size: 15px;
+  }
 }

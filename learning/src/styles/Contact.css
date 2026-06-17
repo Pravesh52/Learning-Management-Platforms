@@ -1,3 +1,5 @@
+/* ================= CONTACT ================= */
+
 /* OVERLAY */
 .contact-overlay {
   position: fixed;
@@ -5,47 +7,52 @@
   left: 0;
   width: 100%;
   height: 100%;
-
   backdrop-filter: blur(5px);
   background: rgba(0,0,0,0.4);
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   z-index: 1000;
+  padding: 15px;
+  box-sizing: border-box;
 }
 
 /* MODAL */
 .contact-modal {
   background: #fff;
   padding: 30px;
-  width: 400px;
+  width: 100%;
+  max-width: 420px;
   border-radius: 12px;
   position: relative;
   text-align: center;
-
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   z-index: 1001;
+  box-sizing: border-box;
 }
 
-/* CLOSE BUTTON FIX */
+/* CLOSE BUTTON */
 .close-btn {
   position: absolute;
   top: 10px;
   right: 15px;
-
   border: none;
   background: transparent;
   font-size: 20px;
   cursor: pointer;
+  z-index: 1002;
+  color: #666;
+  line-height: 1;
+}
 
-  z-index: 1002;   /* 🔥 IMPORTANT FIX */
+.close-btn:hover {
+  color: #ef4444;
 }
 
 /* TEXT */
 .contact-modal h2 {
   margin-bottom: 10px;
+  font-size: 22px;
 }
 
 .info-text {
@@ -58,6 +65,7 @@
 .contact-details p {
   margin: 5px 0;
   font-weight: 500;
+  font-size: 14px;
 }
 
 /* HINT */
@@ -67,4 +75,16 @@
   background: #eef2ff;
   border-radius: 8px;
   font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 400px) {
+  .contact-modal {
+    padding: 25px 18px;
+  }
+
+  .contact-modal h2 {
+    font-size: 18px;
+  }
 }
