@@ -1,38 +1,24 @@
 const express = require("express");
 const router = express.Router();
-const multer = require("multer");
-const path = require("path");
-
-// ✅ FIX: Controller ko properly import karo
 const pdfController = require("../controllers/pdfController");
+const { protect, adminOnly } = require("../middleware/authMiddleware");
 
-// ================= MULTER STORAGE =================
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "upload/"); // ✅ server.js ke static folder se match karta hai
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
+// ✅ Upload — multer ab controller mein hai
+router.post("/upload", protect, adminOnly, pdfController.upload.single("pdf"), pdfController.uploadPdf);
 
-// ✅ FIX: Sirf PDF files allow karo
-const uploads = multer({
-  storage,
-  fileFilter: function (req, file, cb) {
-    if (file.mimetype !== "application/pdf") {
-      return cb(new Error("Only PDF files are allowed"), false);
-    }
-    cb(null, true);
-  },
-});
+// ✅ Admin — saare PDFs dekhe
+router.get("/", protect, adminOnly, pdfController.getAllPdf);
 
-// ================= UPLOAD PDF ROUTE =================
-// ✅ FIX: Controller function use karo
-router.post("/upload", uploads.single("pdf"), pdfController.uploadPdf);
+// ✅ Students — sirf sent wale PDFs
+router.get("/public", pdfController.getPublicPdfs);
 
-// ================= GET ALL PDFS ROUTE =================
-// ✅ FIX: Controller function use karo
-router.get("/", pdfController.getAllPdf);
+// ✅ Send to all students
+router.put("/:id/send", protect, adminOnly, pdfController.sendToStudents);
+
+// ✅ Remove from students
+router.put("/:id/remove", protect, adminOnly, pdfController.removeFromStudents);
+
+// ✅ Delete PDF (Supabase + DB dono se)
+router.delete("/:id", protect, adminOnly, pdfController.deletePdf);
 
 module.exports = router;

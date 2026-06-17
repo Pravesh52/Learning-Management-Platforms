@@ -6,18 +6,21 @@ const pdfSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
     course: {
       type: String,
-      required: false,  // ✅ CHANGED: Made optional
-      default: "General", // ✅ ADDED: Default value
+      required: false,
+      default: "General",
     },
-
+    // ✅ Supabase public URL store hogi (local filename nahi)
     pdf: {
       type: String,
       required: true,
     },
-
+    // ✅ NEW: Send to Students toggle
+    sentToStudents: {
+      type: Boolean,
+      default: false,
+    },
     uploadedBy: {
       type: String,
       default: "Admin",

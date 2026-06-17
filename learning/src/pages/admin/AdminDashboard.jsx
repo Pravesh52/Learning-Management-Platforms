@@ -69,12 +69,14 @@ const AdminDashboard = () => {
 
   // ===== FETCH PDFs =====
   const fetchPDFs = async () => {
-    try {
-      const res = await axios.get(`${BASE_URL}/api/pdfs`);
-      setPdfs(res.data);
-    } catch (error) { console.log(error); }
-  };
-
+  try {
+    // Admin ke liye saare PDFs (sent + unsent dono)
+    const res = await axios.get(`${BASE_URL}/api/pdfs`, { headers: authHeaders });
+    setPdfs(res.data);
+  } catch (error) {
+    console.log(error);
+  }
+};
   // ===== FETCH ENROLLMENTS =====
   const fetchEnrollments = async () => {
     try {
@@ -145,21 +147,33 @@ const AdminDashboard = () => {
 
   // ===== UPLOAD PDF =====
   const uploadPDF = async () => {
-    if (!pdfTitle || !pdfFile) { alert("Please fill all fields"); return; }
-    try {
-      const formData = new FormData();
-      formData.append("title", pdfTitle);
-      formData.append("pdf", pdfFile);
-      if (pdfCourse) formData.append("course", pdfCourse);
-      await axios.post(`${BASE_URL}/api/pdfs/upload`, formData);
-      alert("PDF Uploaded Successfully");
-      setPdfTitle(""); setPdfCourse(""); setPdfFile(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-      fetchPDFs();
-    } catch (error) {
-      alert("Upload failed: " + (error.response?.data?.message || error.message));
-    }
-  };
+  if (!pdfTitle || !pdfFile) {
+    alert("Title aur PDF file dono required hain");
+    return;
+  }
+  try {
+    setPdfLoading(true);
+    const formData = new FormData();
+    formData.append("title", pdfTitle);
+    formData.append("pdf", pdfFile);
+    if (pdfCourse) formData.append("course", pdfCourse);
+ 
+    await axios.post(`${BASE_URL}/api/pdfs/upload`, formData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+ 
+    alert("✅ PDF Supabase pe upload ho gaya!");
+    setPdfTitle("");
+    setPdfCourse("");
+    setPdfFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    fetchPDFs();
+  } catch (error) {
+    alert("Upload failed: " + (error.response?.data?.message || error.message));
+  } finally {
+    setPdfLoading(false);
+  }
+};
 
   // ===== SEND NOTIFICATION =====
   const sendNotification = async () => {
@@ -186,6 +200,40 @@ const AdminDashboard = () => {
     const date = new Date(isoString);
     return `${date.toLocaleDateString("hi-IN", { day: "2-digit", month: "long", year: "numeric" })} | ${date.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true })}`;
   };
+
+  // Delete Pdfs
+
+  const handleSendPdf = async (pdfId, title) => {
+  try {
+    await axios.put(`${BASE_URL}/api/pdfs/${pdfId}/send`, {}, { headers: authHeaders });
+    alert(`✅ "${title}" — All Students ko send ho gaya!`);
+    fetchPDFs();
+  } catch (error) {
+    alert("Error: " + (error.response?.data?.message || error.message));
+  }
+};
+ 
+const handleRemovePdf = async (pdfId, title) => {
+  if (!window.confirm(`"${title}" students se remove karna chahte ho?`)) return;
+  try {
+    await axios.put(`${BASE_URL}/api/pdfs/${pdfId}/remove`, {}, { headers: authHeaders });
+    alert(`🗑️ "${title}" students se remove ho gaya!`);
+    fetchPDFs();
+  } catch (error) {
+    alert("Error: " + (error.response?.data?.message || error.message));
+  }
+};
+ 
+const handleDeletePdf = async (pdfId, title) => {
+  if (!window.confirm(`"${title}" permanently delete karna chahte ho? Supabase se bhi delete hoga.`)) return;
+  try {
+    await axios.delete(`${BASE_URL}/api/pdfs/${pdfId}`, { headers: authHeaders });
+    alert(`🗑️ "${title}" delete ho gaya!`);
+    fetchPDFs();
+  } catch (error) {
+    alert("Error: " + (error.response?.data?.message || error.message));
+  }
+};
 
   // ===== GET ENROLLMENT ID FOR A STUDENT =====
   const getEnrollmentId = (studentId) => {
@@ -359,33 +407,142 @@ const AdminDashboard = () => {
 
         {/* ===== PDF ===== */}
         {activeTab === "pdf" && (
-          <>
-            <h2>Upload PDF</h2>
-            <div className="form">
-              <input type="text" placeholder="PDF Title" value={pdfTitle}
-                onChange={(e) => setPdfTitle(e.target.value)} />
-              <input type="text" placeholder="Course Name (Optional)" value={pdfCourse}
-                onChange={(e) => setPdfCourse(e.target.value)} />
-              <input type="file" accept=".pdf" ref={fileInputRef}
-                onChange={(e) => setPdfFile(e.target.files[0])} />
-              <button onClick={uploadPDF}>Upload PDF</button>
+  <>
+    <h2>📄 Upload PDF / Notes</h2>
+ 
+    {/* UPLOAD FORM */}
+    <div className="form">
+      <input
+        type="text"
+        placeholder="PDF Title (e.g. Physics Chapter 1 Notes)"
+        value={pdfTitle}
+        onChange={(e) => setPdfTitle(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Course Name (Optional)"
+        value={pdfCourse}
+        onChange={(e) => setPdfCourse(e.target.value)}
+      />
+      <input
+        type="file"
+        accept=".pdf"
+        ref={fileInputRef}
+        onChange={(e) => setPdfFile(e.target.files[0])}
+      />
+      <button onClick={uploadPDF} disabled={pdfLoading}>
+        {pdfLoading ? "⏳ Uploading..." : "⬆️ Upload PDF"}
+      </button>
+    </div>
+ 
+    {/* PDF CARDS LIST */}
+    <div className="pdf-list" style={{ marginTop: "30px" }}>
+      <h3 style={{ marginBottom: "16px", color: "#a78bfa" }}>
+        📋 All Uploaded PDFs ({pdfs.length})
+      </h3>
+ 
+      {pdfs.length === 0 ? (
+        <p style={{ color: "#888" }}>Abhi tak koi PDF upload nahi hua</p>
+      ) : (
+        pdfs.map((pdf) => (
+          <div
+            key={pdf._id}
+            style={{
+              background: "#1e1e2e",
+              border: `1px solid ${pdf.sentToStudents ? "#22c55e" : "#333"}`,
+              borderRadius: "12px",
+              padding: "18px 20px",
+              marginBottom: "14px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "12px",
+            }}
+          >
+            {/* LEFT: PDF INFO */}
+            <div style={{ flex: 1 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
+                <span style={{ fontSize: "24px" }}>📄</span>
+                <h4 style={{ margin: 0, color: "#fff", fontSize: "15px" }}>{pdf.title}</h4>
+                {pdf.sentToStudents && (
+                  <span style={{
+                    background: "rgba(34,197,94,0.15)", color: "#22c55e",
+                    border: "1px solid #22c55e", borderRadius: "20px",
+                    padding: "2px 10px", fontSize: "11px", fontWeight: "600"
+                  }}>
+                    ✅ Sent to Students
+                  </span>
+                )}
+              </div>
+              <p style={{ margin: "0 0 4px", color: "#888", fontSize: "13px" }}>
+                📚 Course: {pdf.course || "General"}
+              </p>
+              <p style={{ margin: 0, color: "#666", fontSize: "12px" }}>
+                🕐 Uploaded: {new Date(pdf.createdAt).toLocaleDateString("en-IN", {
+                  day: "2-digit", month: "short", year: "numeric"
+                })}{", "}
+                {new Date(pdf.createdAt).toLocaleTimeString("en-IN", {
+                  hour: "2-digit", minute: "2-digit", hour12: true
+                })}
+              </p>
             </div>
-            <div className="pdf-list">
-              {pdfs.length > 0 ? (
-                pdfs.map((pdf) => (
-                  <div className="pdf-card" key={pdf._id}>
-                    <h3>{pdf.title}</h3>
-                    <p>Course: {pdf.course || "General"}</p>
-                    <a href={`${BASE_URL}/upload/${pdf.pdf}`} target="_blank" rel="noreferrer">
-                      <button>View PDF</button>
-                    </a>
-                  </div>
-                ))
-              ) : (<p>No PDFs Uploaded</p>)}
+ 
+            {/* RIGHT: ACTION BUTTONS */}
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              {/* View PDF */}
+              <a href={pdf.pdf} target="_blank" rel="noreferrer">
+                <button style={{
+                  background: "#2563eb", color: "#fff", border: "none",
+                  borderRadius: "6px", padding: "7px 14px", cursor: "pointer", fontSize: "13px"
+                }}>
+                  👁️ View
+                </button>
+              </a>
+ 
+              {/* Send / Remove toggle */}
+              {pdf.sentToStudents ? (
+                <button
+                  onClick={() => handleRemovePdf(pdf._id, pdf.title)}
+                  style={{
+                    background: "rgba(239,68,68,0.15)", color: "#ef4444",
+                    border: "1px solid #ef4444", borderRadius: "6px",
+                    padding: "7px 14px", cursor: "pointer", fontSize: "13px"
+                  }}
+                >
+                  🚫 Remove
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleSendPdf(pdf._id, pdf.title)}
+                  style={{
+                    background: "rgba(34,197,94,0.15)", color: "#22c55e",
+                    border: "1px solid #22c55e", borderRadius: "6px",
+                    padding: "7px 14px", cursor: "pointer", fontSize: "13px"
+                  }}
+                >
+                  📤 Send to Students
+                </button>
+              )}
+ 
+              {/* Delete */}
+              <button
+                onClick={() => handleDeletePdf(pdf._id, pdf.title)}
+                style={{
+                  background: "rgba(239,68,68,0.15)", color: "#ef4444",
+                  border: "1px solid #ef4444", borderRadius: "6px",
+                  padding: "7px 14px", cursor: "pointer", fontSize: "13px"
+                }}
+              >
+                🗑️ Delete
+              </button>
             </div>
-          </>
-        )}
-
+          </div>
+        ))
+      )}
+    </div>
+  </>
+)}
         {/* ===== NOTIFICATIONS ===== */}
         {activeTab === "notify" && (
           <>

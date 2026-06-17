@@ -6,6 +6,10 @@ const path = require("path");
 const fs = require("fs");
 const nodemailer = require("nodemailer");
 
+// File ke bilkul top pe test karo
+console.log("EMAIL_USER:", process.env.EMAIL_USER);
+console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "SET ✅" : "NOT SET ❌");
+
 // ===== MULTER SETUP FOR PHOTO =====
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
