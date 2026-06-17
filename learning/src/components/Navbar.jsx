@@ -1,52 +1,63 @@
-
-
-
 import React, { useState } from "react";
 import "../styles/Navbar.css";
 import { Link, useNavigate } from "react-router-dom";
-import { FaSearch, FaShoppingCart, FaGraduationCap } from "react-icons/fa";
+import { FaSearch, FaShoppingCart, FaGraduationCap, FaBars, FaTimes } from "react-icons/fa";
 import Contact from "../pages/Contact";
 
 const Navbar = () => {
-
   const navigate = useNavigate();
   const [showContact, setShowContact] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);   // ✅ hamburger state
 
   const user = JSON.parse(localStorage.getItem("user"));
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    setIsOpen(false);
     navigate("/login");
   };
 
   const handleDashboardRedirect = () => {
     if (!user) return;
+    setIsOpen(false);
     if (user.role === "admin") navigate("/admin");
     else navigate("/dashboard");
   };
+
+  // link click par menu band ho jaye
+  const closeMenu = () => setIsOpen(false);
 
   return (
     <>
       <nav className="navbar">
 
-        <div className="logo" onClick={() => navigate("/")}>
+        {/* LOGO */}
+        <div className="logo" onClick={() => { navigate("/"); closeMenu(); }}>
           <FaGraduationCap className="logo-icon" />
           <span>Climax Academy</span>
         </div>
 
-        <ul className="nav-links">
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/courses">Courses</Link></li>
-          <li><Link to="/pages">Pages</Link></li>
+        {/* ✅ HAMBURGER BUTTON — sirf mobile par dikhta hai */}
+        <button className="hamburger" onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? <FaTimes /> : <FaBars />}
+        </button>
 
-          {/* 🔥 FIXED CONTACT */}
-          <li onClick={() => setShowContact(true)} style={{cursor:"pointer"}}>
+        {/* ✅ NAV LINKS — mobile par .open class se toggle hoti hai */}
+        <ul className={`nav-links ${isOpen ? "open" : ""}`}>
+          <li><Link to="/" onClick={closeMenu}>Home</Link></li>
+          <li><Link to="/courses" onClick={closeMenu}>Courses</Link></li>
+          <li><Link to="/pages" onClick={closeMenu}>Pages</Link></li>
+          <li
+            onClick={() => { setShowContact(true); closeMenu(); }}
+            style={{ cursor: "pointer" }}
+          >
             Contact
           </li>
         </ul>
 
-        <div className="nav-right">
+        {/* ✅ NAV RIGHT — mobile par .open class se toggle hoti hai */}
+        <div className={`nav-right ${isOpen ? "open" : ""}`}>
           <FaSearch className="icon" />
 
           <div className="cart">
@@ -57,12 +68,12 @@ const Navbar = () => {
           {user ? (
             <>
               {user.role === "admin" && (
-                <button onClick={() => navigate("/admin")}>
+                <button onClick={() => { navigate("/admin"); closeMenu(); }}>
                   Admin Panel
                 </button>
               )}
 
-              <span onClick={handleDashboardRedirect}>
+              <span onClick={handleDashboardRedirect} style={{ cursor: "pointer" }}>
                 {user.name}
               </span>
 
@@ -70,26 +81,26 @@ const Navbar = () => {
                 src={`https://ui-avatars.com/api/?name=${user.name}`}
                 alt="profile"
                 onClick={handleDashboardRedirect}
+                style={{ width: 36, height: 36, borderRadius: "50%", cursor: "pointer" }}
               />
 
               <button onClick={handleLogout}>Logout</button>
             </>
           ) : (
-           <>
-  <Link to="/login">
-    <button className="login-btn">Login</button>
-  </Link>
-
-  <Link to="/signup">
-    <button className="signup-btn">Sign Up</button>
-  </Link>
-</>
+            <>
+              <Link to="/login" onClick={closeMenu}>
+                <button className="login-btn">Login</button>
+              </Link>
+              <Link to="/signup" onClick={closeMenu}>
+                <button className="signup-btn">Sign Up</button>
+              </Link>
+            </>
           )}
         </div>
 
       </nav>
 
-      {/* 🔥 CONTACT MODAL */}
+      {/* CONTACT MODAL */}
       {showContact && (
         <Contact onClose={() => setShowContact(false)} />
       )}

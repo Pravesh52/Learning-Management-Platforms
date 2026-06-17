@@ -7,24 +7,26 @@
   background-color: #f5f5f5;
   font-family: Arial, sans-serif;
   position: relative;
+  z-index: 100;
 }
 
-/* Logo */
+/* LOGO */
 .logo {
   display: flex;
   align-items: center;
   font-size: 22px;
   font-weight: bold;
+  cursor: pointer;
   z-index: 101;
+  gap: 8px;
 }
 
 .logo-icon {
   color: #2ecc71;
   font-size: 28px;
-  margin-right: 8px;
 }
 
-/* Nav Links */
+/* NAV LINKS */
 .nav-links {
   list-style: none;
   display: flex;
@@ -48,7 +50,7 @@
   font-weight: 500;
 }
 
-/* Right Section */
+/* NAV RIGHT */
 .nav-right {
   display: flex;
   align-items: center;
@@ -60,7 +62,7 @@
   cursor: pointer;
 }
 
-/* Cart Badge */
+/* CART */
 .cart {
   position: relative;
 }
@@ -76,7 +78,7 @@
   padding: 2px 6px;
 }
 
-/* Buttons */
+/* BUTTONS */
 .login-btn,
 .signup-btn {
   background-color: #2fc66e;
@@ -87,6 +89,7 @@
   cursor: pointer;
   font-size: 14px;
   white-space: nowrap;
+  transition: background 0.3s;
 }
 
 .login-btn:hover,
@@ -94,28 +97,21 @@
   background-color: #27ae60;
 }
 
-/* ── Hamburger ── */
+/* ── HAMBURGER ── */
+/* Desktop par bilkul hide */
 .hamburger {
   display: none;
-  flex-direction: column;
-  gap: 5px;
   background: none;
   border: none;
   cursor: pointer;
+  font-size: 22px;
+  color: #1c2c4c;
   z-index: 101;
   padding: 4px;
+  line-height: 1;
 }
 
-.hamburger span {
-  display: block;
-  width: 25px;
-  height: 3px;
-  background: #1c2c4c;
-  border-radius: 3px;
-  transition: 0.3s;
-}
-
-/* ================= TABLET ================= */
+/* ================= TABLET (max 900px) ================= */
 @media (max-width: 900px) {
   .navbar {
     padding: 15px 30px;
@@ -132,50 +128,77 @@
   }
 }
 
-/* ================= MOBILE ================= */
+/* ================= MOBILE (max 680px) ================= */
 @media (max-width: 680px) {
   .navbar {
     padding: 15px 20px;
     flex-wrap: wrap;
+    gap: 10px;
   }
 
+  /* ✅ Hamburger dikhao */
   .hamburger {
-    display: flex;
+    display: block;
   }
 
+  /* ✅ Nav links — default chhupe, .open par dikho */
   .nav-links {
     display: none;
     flex-direction: column;
     position: absolute;
-    top: 60px;
+    top: 62px;
     left: 0;
     width: 100%;
     background: #f5f5f5;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    z-index: 100;
+    padding: 15px 20px 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    z-index: 99;
     gap: 15px;
+    box-sizing: border-box;
   }
 
   .nav-links.open {
     display: flex;
   }
 
+  /* ✅ Nav right — default chhupa, .open par dikho */
   .nav-right {
     display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding: 0 20px 20px;
+    gap: 12px;
+    background: #f5f5f5;
+    position: absolute;
+    top: auto;        /* nav-links ke neeche aayega automatically */
+    left: 0;
+    z-index: 98;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
   }
 
   .nav-right.open {
     display: flex;
-    flex-direction: column;
-    width: 100%;
-    padding: 0 20px 20px;
-    gap: 10px;
   }
 
   .login-btn,
   .signup-btn {
     width: 100%;
     text-align: center;
+  }
+
+  /* Buttons inside nav-right full width */
+  .nav-right button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+
+  /* nav-right.open ki exact position — nav-links ke neeche */
+  .nav-links.open ~ .nav-right.open,
+  .nav-right.open {
+    top: auto;
   }
 }
