@@ -18,8 +18,25 @@ const courseSchema = new mongoose.Schema({
     enum: ["draft", "published"],
     default: "draft",
   },
+  // ===== BUG 4 FIX: New fields =====
+  batch: {
+    type: String,
+    default: ""
+  },
+  className: {
+    type: String,
+    default: ""
+  },
+  teacherName: {
+    type: String,
+    default: ""
+  },
+  // ===== BUG 1 FIX: sentToUI flag in DB =====
+  sentToUI: {
+    type: Boolean,
+    default: false
+  }
 }, { timestamps: true });
 
-// 🔥 IMPORTANT FIX
 module.exports =
   mongoose.models.Course || mongoose.model("Course", courseSchema);
