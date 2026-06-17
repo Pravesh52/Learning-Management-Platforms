@@ -31,57 +31,30 @@ const Login = ({ onClose }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   try {
-  //     setError("");
-
-  //             const res = await axios.post(
-  //               `${BASE_URL}/api/auth/login`,
-  //               formData
-  //              );
-
-  //     localStorage.setItem("token", res.data.token);
-  //     localStorage.setItem("user", JSON.stringify(res.data.user));
-
-  //     if (res.data.user.role === "admin") {
-  //       navigate("/admin");
-  //     } else {
-  //       navigate("/dashboard");
-  //     }
-
-  //   } catch (error) {
-  //     setError(error.response?.data?.message || "Invalid credentials");
-  //   }
-  // };
-
   const handleSubmit = async (e) => {
-            e.preventDefault();
+    e.preventDefault();
 
-            try {
-            setError("");
+    try {
+      setError("");
 
-            const res = await axios.post(
-              `${BASE_URL}/api/auth/login`,
-              formData
-            );
+              const res = await axios.post(
+                `${BASE_URL}/api/auth/login`,
+                formData
+               );
 
-            // Session Storage Use Karo
-            sessionStorage.setItem("token", res.data.token);
-            sessionStorage.setItem("user", JSON.stringify(res.data.user));
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
 
-            if (res.data.user.role === "admin") {
-              navigate("/admin");
-            } else {
-              navigate("/dashboard");
-            }
+      if (res.data.user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
 
-            } catch (error) {
-            setError(error.response?.data?.message || "Invalid credentials");
-            }
-      };
-
+    } catch (error) {
+      setError(error.response?.data?.message || "Invalid credentials");
+    }
+  };
 
   return (
     <div className="login-overlay" onClick={handleClose}>

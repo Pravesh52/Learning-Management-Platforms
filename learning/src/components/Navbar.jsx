@@ -12,24 +12,19 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [showContact, setShowContact] = useState(false);
 
-  const user = JSON.parse(sessionStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem("user"));
 
-              const handleLogout = () => {
-              sessionStorage.removeItem("token");
-              sessionStorage.removeItem("user");
-              navigate("/login");
-              };
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
 
-              const handleDashboardRedirect = () => {
-              if (!user) return;
-
-              if (user.role === "admin") {
-              navigate("/admin");
-              } else {
-              navigate("/dashboard");
-              }
-              };
-
+  const handleDashboardRedirect = () => {
+    if (!user) return;
+    if (user.role === "admin") navigate("/admin");
+    else navigate("/dashboard");
+  };
 
   return (
     <>
