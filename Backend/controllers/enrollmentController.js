@@ -71,7 +71,27 @@ const sendEmail = async (to, subject, html) => {
     console.log("❌ Full error:", err); // ADD THIS
   }
 };
-
+// ===== EMAIL TEST =====
+exports.testEmail = async (req, res) => {
+  try {
+    console.log("📧 Test email bhej raha hoon...");
+    await transporter.verify();
+    console.log("✅ Transporter verified!");
+    
+    const info = await transporter.sendMail({
+      from: `"Climax Academy" <${process.env.EMAIL_USER}>`,
+      to: process.env.EMAIL_USER, // khud ko hi bhejo
+      subject: "✅ Test Email from LMS",
+      html: "<h1>Email kaam kar raha hai!</h1>",
+    });
+    
+    console.log("✅ Message ID:", info.messageId);
+    res.json({ success: true, messageId: info.messageId });
+  } catch (err) {
+    console.log("❌ Test email error:", err.message);
+    res.json({ success: false, error: err.message });
+  }
+};
 // ===== CREATE ENROLLMENT =====
 exports.createEnrollment = async (req, res) => {
   try {
