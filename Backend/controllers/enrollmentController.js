@@ -3,7 +3,9 @@ const User = require("../models/user");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const nodemailer = require("nodemailer");
+// const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 console.log("EMAIL_USER:", process.env.EMAIL_USER);
 console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "SET ✅" : "NOT SET ❌");
@@ -23,13 +25,13 @@ exports.upload = multer({ storage });
 
 // ===== EMAIL SENDER =====
 // ✅ FIX: transporter ek baar banao — baar baar mat banao
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+// const transporter = nodemailer.createTransport({
+//   service: "gmail",
+//   auth: {
+//     user: process.env.EMAIL_USER,
+//     pass: process.env.EMAIL_PASS,
+//   },
+// });
 
 // const sendEmail = async (to, subject, html) => {
 //   // ✅ FIX: Email_USER nahi hai toh skip karo — server crash nahi hoga
@@ -52,46 +54,48 @@ const transporter = nodemailer.createTransport({
 // };
 
 const sendEmail = async (to, subject, html) => {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.log("⚠️ Email credentials missing");
+  if (!process.env.RESEND_API_KEY) {
+    console.log("⚠️ RESEND_API_KEY missing");
     return;
   }
   try {
-    const info = await transporter.sendMail({
-      from: `"Climax Academy" <${process.env.EMAIL_USER}>`,
+    const { data, error } = await resend.emails.send({
+      from: "Climax Academy <onboarding@resend.dev>", // ✅ Ye use karo pehle
       to,
       subject,
       html,
     });
-    // ✅ Message ID log karo — confirm hoga email gayi
-    console.log("✅ Email sent to:", to);
-    console.log("✅ Message ID:", info.messageId); // ADD THIS
+    if (error) {
+      console.log("❌ Resend error:", error);
+      return;
+    }
+    console.log("✅ Email sent! ID:", data.id);
   } catch (err) {
     console.log("❌ Email error:", err.message);
-    console.log("❌ Full error:", err); // ADD THIS
   }
 };
+
 // ===== EMAIL TEST =====
 exports.testEmail = async (req, res) => {
   try {
-    console.log("📧 Test email bhej raha hoon...");
-    await transporter.verify();
-    console.log("✅ Transporter verified!");
-    
-    const info = await transporter.sendMail({
-      from: `"Climax Academy" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_USER, // khud ko hi bhejo
+    const { data, error } = await resend.emails.send({
+      from: "Climax Academy <onboarding@resend.dev>",
+      to: "Pravesht252@gmail.com",
       subject: "✅ Test Email from LMS",
       html: "<h1>Email kaam kar raha hai!</h1>",
     });
-    
-    console.log("✅ Message ID:", info.messageId);
-    res.json({ success: true, messageId: info.messageId });
+    if (error) {
+      console.log("❌ Resend error:", error);
+      return res.json({ success: false, error });
+    }
+    console.log("✅ Email sent! ID:", data.id);
+    res.json({ success: true, id: data.id });
   } catch (err) {
-    console.log("❌ Test email error:", err.message);
+    console.log("❌ Error:", err.message);
     res.json({ success: false, error: err.message });
   }
 };
+
 // ===== CREATE ENROLLMENT =====
 exports.createEnrollment = async (req, res) => {
   try {
