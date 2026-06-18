@@ -18,6 +18,8 @@ const AdminDashboard = () => {
   const [pdfTitle, setPdfTitle] = useState("");
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfCourse, setPdfCourse] = useState("");
+  // Ye line add karo baaki states ke saath
+const [pdfLoading, setPdfLoading] = useState(false);
   const fileInputRef = useRef(null);
 
   // ===== ENROLLMENT DETAIL MODAL =====
