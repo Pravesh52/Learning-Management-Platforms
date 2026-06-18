@@ -314,9 +314,19 @@ const handleDeletePdf = async (pdfId, title) => {
                           <td>{u.name}</td>
                           <td>{u.email}</td>
                           <td>{u.mobilenumber || "N/A"}</td>
-                          {/* ✅ BUG 2 FIX: Enrolled / Not Enrolled */}
+                          {/* ✅ Enrolled / Not Enrolled */}
                           <td>
-                            <span className={`badge ${u.isEnrolled ? "badge-enrolled" : "badge-not-enrolled"}`}>
+                            <span style={{
+                              display: "inline-block",
+                              padding: "4px 12px",
+                              borderRadius: "20px",
+                              fontSize: "12px",
+                              fontWeight: "600",
+                              background: u.isEnrolled ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)",
+                              color: u.isEnrolled ? "#22c55e" : "#ef4444",
+                              border: `1px solid ${u.isEnrolled ? "#22c55e" : "#ef4444"}`,
+                              whiteSpace: "nowrap",
+                            }}>
                               {u.isEnrolled ? "✅ Enrolled" : "❌ Not Enrolled"}
                             </span>
                           </td>

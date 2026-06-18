@@ -1,12 +1,10 @@
 const Enrollment = require("../models/enrollment");
 const User = require("../models/user");
-const Course = require("../models/course");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const nodemailer = require("nodemailer");
 
-// File ke bilkul top pe test karo
 console.log("EMAIL_USER:", process.env.EMAIL_USER);
 console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "SET ✅" : "NOT SET ❌");
 
@@ -24,23 +22,36 @@ const storage = multer.diskStorage({
 exports.upload = multer({ storage });
 
 // ===== EMAIL SENDER =====
+// ✅ FIX: transporter ek baar banao — baar baar mat banao
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
 const sendEmail = async (to, subject, html) => {
+  // ✅ FIX: Email_USER nahi hai toh skip karo — server crash nahi hoga
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.log("⚠️ Email credentials missing — email skip kar rahe hain");
+    return;
+  }
   try {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
+    await transporter.sendMail({
+      from: `"Climax Academy" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      html,
     });
-    await transporter.sendMail({ from: process.env.EMAIL_USER, to, subject, html });
     console.log("✅ Email sent to:", to);
   } catch (err) {
-    console.log("❌ Email error:", err.message);
+    // ✅ FIX: Email fail hone pe enrollment fail nahi hogi
+    console.log("❌ Email error (non-blocking):", err.message);
   }
 };
 
-// ===== BUG 2 FIX: CREATE ENROLLMENT =====
+// ===== CREATE ENROLLMENT =====
 exports.createEnrollment = async (req, res) => {
   try {
     const {
@@ -51,14 +62,20 @@ exports.createEnrollment = async (req, res) => {
       feesMode, totalFees, batch,
     } = req.body;
 
-    // Check already enrolled
+    // ✅ Validation
+    if (!studentId || !courseId || !courseName) {
+      return res.status(400).json({ message: "Student, Course aur Course Name required hai" });
+    }
+
+    // ✅ Already enrolled check
     const existing = await Enrollment.findOne({ student: studentId, course: courseId });
     if (existing) {
-      return res.status(400).json({ message: "Already enrolled in this course" });
+      return res.status(400).json({ message: "Aap already is course mein enrolled hain" });
     }
 
     const photo = req.file ? req.file.filename : "";
 
+    // ✅ Enrollment create karo
     const enrollment = await Enrollment.create({
       student: studentId,
       course: courseId,
@@ -70,58 +87,74 @@ exports.createEnrollment = async (req, res) => {
       feesMode, totalFees: Number(totalFees) || 0, batch: batch || "",
     });
 
-    // ✅ Update user's enrolled status
+    // ✅ User ka isEnrolled update karo
     await User.findByIdAndUpdate(studentId, {
       isEnrolled: true,
       enrolledCourse: courseId,
       enrolledCourseName: courseName,
     });
 
-    // ✅ Send email confirmation
+    // ✅ Pehle response bhejo — phir email (non-blocking)
+    res.status(201).json({ message: "Enrolled successfully", enrollment });
+
+    // ✅ FIX: Email response ke BAAD bhejo taaki submit button fast respond kare
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f9f9f9; padding: 30px; border-radius: 10px;">
-        <h2 style="color: #6c63ff; text-align: center;">🎓 Enrollment Confirmed!</h2>
-        <h3 style="text-align: center; color: #333;">Climax Academy</h3>
-        <hr/>
-        <p>Dear <strong>${studentName}</strong>,</p>
-        <p>You have been successfully enrolled in <strong>${courseName}</strong>!</p>
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h2 style="color: #6c63ff; margin: 0;">🎓 Enrollment Confirmed!</h2>
+          <h3 style="color: #333; margin: 5px 0;">Climax Academy</h3>
+        </div>
+        <hr style="border: 1px solid #eee;"/>
+        <p style="color: #333;">Dear <strong>${studentName}</strong>,</p>
+        <p style="color: #555;">You have been successfully enrolled in <strong style="color: #6c63ff;">${courseName}</strong>!</p>
         <table style="width:100%; border-collapse: collapse; margin-top: 20px;">
           <tr style="background: #6c63ff; color: white;">
-            <th style="padding: 10px; text-align: left;">Details</th>
-            <th style="padding: 10px; text-align: left;">Info</th>
+            <th style="padding: 10px; text-align: left; border-radius: 6px 0 0 0;">Details</th>
+            <th style="padding: 10px; text-align: left; border-radius: 0 6px 0 0;">Info</th>
           </tr>
           <tr style="background: #fff;">
-            <td style="padding: 8px 10px; border: 1px solid #ddd;">Course</td>
-            <td style="padding: 8px 10px; border: 1px solid #ddd;">${courseName}</td>
+            <td style="padding: 10px; border: 1px solid #eee;">📚 Course</td>
+            <td style="padding: 10px; border: 1px solid #eee;"><strong>${courseName}</strong></td>
           </tr>
-          <tr style="background: #f5f5f5;">
-            <td style="padding: 8px 10px; border: 1px solid #ddd;">Student Name</td>
-            <td style="padding: 8px 10px; border: 1px solid #ddd;">${studentName}</td>
-          </tr>
-          <tr style="background: #fff;">
-            <td style="padding: 8px 10px; border: 1px solid #ddd;">Email</td>
-            <td style="padding: 8px 10px; border: 1px solid #ddd;">${email}</td>
-          </tr>
-          <tr style="background: #f5f5f5;">
-            <td style="padding: 8px 10px; border: 1px solid #ddd;">Mobile</td>
-            <td style="padding: 8px 10px; border: 1px solid #ddd;">${mobile}</td>
+          <tr style="background: #f9f9f9;">
+            <td style="padding: 10px; border: 1px solid #eee;">👤 Student Name</td>
+            <td style="padding: 10px; border: 1px solid #eee;">${studentName}</td>
           </tr>
           <tr style="background: #fff;">
-            <td style="padding: 8px 10px; border: 1px solid #ddd;">Fees Mode</td>
-            <td style="padding: 8px 10px; border: 1px solid #ddd;">${feesMode === "online" ? "Online" : "Offline"}</td>
+            <td style="padding: 10px; border: 1px solid #eee;">📧 Email</td>
+            <td style="padding: 10px; border: 1px solid #eee;">${email}</td>
           </tr>
-          <tr style="background: #f5f5f5;">
-            <td style="padding: 8px 10px; border: 1px solid #ddd;">Enrolled On</td>
-            <td style="padding: 8px 10px; border: 1px solid #ddd;">${new Date().toLocaleDateString("hi-IN")}</td>
+          <tr style="background: #f9f9f9;">
+            <td style="padding: 10px; border: 1px solid #eee;">📱 Mobile</td>
+            <td style="padding: 10px; border: 1px solid #eee;">${mobile}</td>
+          </tr>
+          <tr style="background: #fff;">
+            <td style="padding: 10px; border: 1px solid #eee;">🎓 Class</td>
+            <td style="padding: 10px; border: 1px solid #eee;">${presentClass || "—"}</td>
+          </tr>
+          <tr style="background: #f9f9f9;">
+            <td style="padding: 10px; border: 1px solid #eee;">💰 Fees Mode</td>
+            <td style="padding: 10px; border: 1px solid #eee;">${feesMode === "online" ? "💳 Online" : "💵 Offline"}</td>
+          </tr>
+          <tr style="background: #fff;">
+            <td style="padding: 10px; border: 1px solid #eee;">📅 Enrolled On</td>
+            <td style="padding: 10px; border: 1px solid #eee;">${new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" })}</td>
           </tr>
         </table>
-        <p style="margin-top: 20px; color: #666; font-size: 14px;">Best of luck with your studies! 🌟</p>
-        <p style="color: #6c63ff; font-weight: bold;">- Climax Academy Team</p>
+        <div style="margin-top: 25px; padding: 15px; background: #f0f0ff; border-radius: 8px; border-left: 4px solid #6c63ff;">
+          <p style="margin: 0; color: #555; font-size: 14px;">🌟 Best of luck with your studies! Our team will contact you soon with further details.</p>
+        </div>
+        <p style="color: #6c63ff; font-weight: bold; margin-top: 20px;">— Climax Academy Team</p>
       </div>
     `;
-    await sendEmail(email, `✅ Enrollment Confirmed - ${courseName} | Climax Academy`, emailHtml);
 
-    res.status(201).json({ message: "Enrolled successfully", enrollment });
+    // ✅ Non-blocking email — await mat karo yahan
+    sendEmail(
+      email,
+      `✅ Enrollment Confirmed - ${courseName} | Climax Academy`,
+      emailHtml
+    );
+
   } catch (error) {
     console.log("ENROLLMENT ERROR:", error);
     res.status(500).json({ message: error.message });
