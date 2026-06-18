@@ -72,11 +72,12 @@ const [pdfLoading, setPdfLoading] = useState(false);
   // ===== FETCH PDFs =====
   const fetchPDFs = async () => {
   try {
-    // Admin ke liye saare PDFs (sent + unsent dono)
-    const res = await axios.get(`${BASE_URL}/api/pdfs`, { headers: authHeaders });
+    const res = await axios.get(`${BASE_URL}/api/pdfs`, { 
+      headers: { Authorization: `Bearer ${token}` }
+    });
     setPdfs(res.data);
   } catch (error) {
-    console.log(error);
+    console.log("PDF fetch error:", error.response?.data || error.message);
   }
 };
   // ===== FETCH ENROLLMENTS =====
@@ -159,12 +160,15 @@ const [pdfLoading, setPdfLoading] = useState(false);
     formData.append("title", pdfTitle);
     formData.append("pdf", pdfFile);
     if (pdfCourse) formData.append("course", pdfCourse);
- 
+
     await axios.post(`${BASE_URL}/api/pdfs/upload`, formData, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { 
+        Authorization: `Bearer ${token}` 
+        // Content-Type mat daalo — FormData khud set karta hai
+      },
     });
- 
-    alert("✅ PDF Supabase pe upload ho gaya!");
+
+    alert("✅ PDF upload ho gaya!");
     setPdfTitle("");
     setPdfCourse("");
     setPdfFile(null);
