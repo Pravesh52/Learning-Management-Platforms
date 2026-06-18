@@ -31,23 +31,44 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// const sendEmail = async (to, subject, html) => {
+//   // ✅ FIX: Email_USER nahi hai toh skip karo — server crash nahi hoga
+//   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+//     console.log("⚠️ Email credentials missing — email skip kar rahe hain");
+//     return;
+//   }
+//   try {
+//     await transporter.sendMail({
+//       from: `"Climax Academy" <${process.env.EMAIL_USER}>`,
+//       to,
+//       subject,
+//       html,
+//     });
+//     console.log("✅ Email sent to:", to);
+//   } catch (err) {
+//     // ✅ FIX: Email fail hone pe enrollment fail nahi hogi
+//     console.log("❌ Email error (non-blocking):", err.message);
+//   }
+// };
+
 const sendEmail = async (to, subject, html) => {
-  // ✅ FIX: Email_USER nahi hai toh skip karo — server crash nahi hoga
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.log("⚠️ Email credentials missing — email skip kar rahe hain");
+    console.log("⚠️ Email credentials missing");
     return;
   }
   try {
-    await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: `"Climax Academy" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html,
     });
+    // ✅ Message ID log karo — confirm hoga email gayi
     console.log("✅ Email sent to:", to);
+    console.log("✅ Message ID:", info.messageId); // ADD THIS
   } catch (err) {
-    // ✅ FIX: Email fail hone pe enrollment fail nahi hogi
-    console.log("❌ Email error (non-blocking):", err.message);
+    console.log("❌ Email error:", err.message);
+    console.log("❌ Full error:", err); // ADD THIS
   }
 };
 
