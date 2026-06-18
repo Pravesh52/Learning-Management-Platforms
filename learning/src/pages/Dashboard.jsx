@@ -102,12 +102,17 @@ const Dashboard = () => {
   };
 
   const fetchPdfs = async () => {
-    try {
-      const res = await fetch(`${BASE_URL}/api/pdfs`, { headers: authHeaders });
-      const data = await res.json();
-      setPdfs(data);
-    } catch { }
-  };
+  try {
+    // ✅ /public endpoint use karo — no auth needed
+    const res = await fetch(`${BASE_URL}/api/pdfs/public`);
+    const data = await res.json();
+    // ✅ Array check karo
+    setPdfs(Array.isArray(data) ? data : []);
+  } catch (err) {
+    console.log("PDF fetch error:", err);
+    setPdfs([]);
+  }
+};
 
   useEffect(() => {
     if (activeTab === "courses") { fetchCourses(); fetchEnrolledCourses(); }
