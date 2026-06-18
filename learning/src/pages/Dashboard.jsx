@@ -326,7 +326,8 @@ const Dashboard = () => {
                 <h4>{pdf.title}</h4>
                 <p>Course: {pdf.course || "General"}</p>
               </div>
-              <a href={`${BASE_URL}/upload/${pdf.pdf}`} target="_blank" rel="noopener noreferrer" className="pdf-download-btn">
+              {/* <a href={`${BASE_URL}/upload/${pdf.pdf}`} target="_blank" rel="noopener noreferrer" className="pdf-download-btn"> */}
+              <a href={pdf.pdf} target="_blank" rel="noopener noreferrer" className="pdf-download-btn">
                 ⬇ Download
               </a>
             </div>
