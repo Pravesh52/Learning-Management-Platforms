@@ -557,10 +557,10 @@ const Dashboard = () => {
                 </p>
                 <button
                   onClick={() => {
-                    setShowEnrollForm(false);
-                    setEnrollSuccess(false);
-                    window.location.reload(); // Dashboard refresh
-                  }}
+                            setShowEnrollForm(false);
+                            setEnrollSuccess(false);
+                            navigate("/dashboard");
+                          }}
                   style={{
                     background: "#6c63ff", color: "#fff", border: "none",
                     borderRadius: "10px", padding: "14px 50px",
