@@ -26,6 +26,21 @@ const [pdfLoading, setPdfLoading] = useState(false);
   const [showEnrollModal, setShowEnrollModal] = useState(false);
   const [enrollDetail, setEnrollDetail] = useState(null);
 
+  // ===== RESULT MANAGEMENT STATES (NEW) =====
+  const [showResultModal, setShowResultModal] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [studentResults, setStudentResults] = useState([]);
+  const [showResultForm, setShowResultForm] = useState(false);
+  const [editingResultId, setEditingResultId] = useState(null);
+  const [resultForm, setResultForm] = useState({
+    testType: "Marathon Test",
+    testName: "",
+    marksObtained: "",
+    totalMarks: "",
+    remarks: "",
+    date: new Date().toISOString().split("T")[0],
+  });
+
   const admin = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
   const authHeaders = { Authorization: `Bearer ${token}` };
@@ -247,6 +262,108 @@ const handleDeletePdf = async (pdfId, title) => {
     return e ? e._id : null;
   };
 
+  // ===== RESULT MANAGEMENT FUNCTIONS (NEW) =====
+  const fetchStudentResults = async (studentId) => {
+    try {
+      const res = await axios.get(`${BASE_URL}/api/results/student/${studentId}`, {
+        headers: authHeaders,
+      });
+      setStudentResults(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const openResultModal = (student) => {
+    setSelectedStudent(student);
+    setShowResultModal(true);
+    setShowResultForm(false);
+    setEditingResultId(null);
+    fetchStudentResults(student._id);
+  };
+
+  const resetResultForm = () => {
+    setResultForm({
+      testType: "Marathon Test",
+      testName: "",
+      marksObtained: "",
+      totalMarks: "",
+      remarks: "",
+      date: new Date().toISOString().split("T")[0],
+    });
+    setEditingResultId(null);
+  };
+
+  const handleSaveResult = async (sendNow) => {
+    if (!resultForm.testName || !resultForm.marksObtained || !resultForm.totalMarks) {
+      alert("Test Name, Marks Obtained aur Total Marks required hain");
+      return;
+    }
+    try {
+      if (editingResultId) {
+        await axios.put(`${BASE_URL}/api/results/${editingResultId}`, resultForm, { headers: authHeaders });
+        alert("✅ Result updated successfully!");
+      } else {
+        await axios.post(
+          `${BASE_URL}/api/results`,
+          { ...resultForm, studentId: selectedStudent._id, sendNow },
+          { headers: authHeaders }
+        );
+        alert(sendNow ? "✅ Result created & sent to student!" : "✅ Result saved as draft!");
+      }
+      resetResultForm();
+      setShowResultForm(false);
+      fetchStudentResults(selectedStudent._id);
+    } catch (error) {
+      alert("Error: " + (error.response?.data?.message || error.message));
+    }
+  };
+
+  const handleEditResult = (result) => {
+    setResultForm({
+      testType: result.testType,
+      testName: result.testName,
+      marksObtained: result.marksObtained,
+      totalMarks: result.totalMarks,
+      remarks: result.remarks || "",
+      date: new Date(result.date).toISOString().split("T")[0],
+    });
+    setEditingResultId(result._id);
+    setShowResultForm(true);
+  };
+
+  const handleDeleteResult = async (resultId, testName) => {
+    if (!window.confirm(`"${testName}" result delete karna chahte ho?`)) return;
+    try {
+      await axios.delete(`${BASE_URL}/api/results/${resultId}`, { headers: authHeaders });
+      alert("🗑️ Result deleted!");
+      fetchStudentResults(selectedStudent._id);
+    } catch (error) {
+      alert("Error: " + (error.response?.data?.message || error.message));
+    }
+  };
+
+  const handleSendResult = async (resultId, testName) => {
+    try {
+      await axios.put(`${BASE_URL}/api/results/${resultId}/send`, {}, { headers: authHeaders });
+      alert(`📤 "${testName}" student ko send ho gaya!`);
+      fetchStudentResults(selectedStudent._id);
+    } catch (error) {
+      alert("Error: " + (error.response?.data?.message || error.message));
+    }
+  };
+
+  const handleUnsendResult = async (resultId, testName) => {
+    if (!window.confirm(`"${testName}" student ki dashboard se hide karna chahte ho?`)) return;
+    try {
+      await axios.put(`${BASE_URL}/api/results/${resultId}/unsend`, {}, { headers: authHeaders });
+      alert(`🚫 "${testName}" student se hide ho gaya!`);
+      fetchStudentResults(selectedStudent._id);
+    } catch (error) {
+      alert("Error: " + (error.response?.data?.message || error.message));
+    }
+  };
+
   return (
     <div className="admin-container">
       {/* SIDEBAR */}
@@ -296,12 +413,14 @@ const handleDeletePdf = async (pdfId, title) => {
                   <thead>
                     <tr>
                       <th>#</th>
+                      <th>Enrollment No.</th>
                       <th>Name</th>
                       <th>Email</th>
                       <th>Mobile</th>
                       <th>Enrollment</th>
                       <th>Course Enrolled</th>
                       <th>Enrollment Form</th>
+                      <th>Result</th>
                       <th>Status</th>
                     </tr>
                   </thead>
@@ -311,6 +430,18 @@ const handleDeletePdf = async (pdfId, title) => {
                       return (
                         <tr key={u._id}>
                           <td>{index + 1}</td>
+                          <td>
+                            {u.enrollmentNumber ? (
+                              <span style={{
+                                background: "rgba(167,139,250,0.15)", color: "#a78bfa",
+                                border: "1px solid #a78bfa", borderRadius: "6px",
+                                padding: "3px 10px", fontSize: "12px", fontWeight: "700",
+                                whiteSpace: "nowrap"
+                              }}>
+                                {u.enrollmentNumber}
+                              </span>
+                            ) : "—"}
+                          </td>
                           <td>{u.name}</td>
                           <td>{u.email}</td>
                           <td>{u.mobilenumber || "N/A"}</td>
@@ -343,7 +474,23 @@ const handleDeletePdf = async (pdfId, title) => {
                               </button>
                             ) : "—"}
                           </td>
-                          {/* ✅ BUG 3 FIX: Active / Deactive */}
+                          {/* ✅ Result Manage Button */}
+                          <td>
+                            {u.isEnrolled ? (
+                              <button
+                                onClick={() => openResultModal(u)}
+                                style={{
+                                  background: "rgba(96,165,250,0.15)", color: "#60a5fa",
+                                  border: "1px solid #60a5fa", borderRadius: "6px",
+                                  padding: "5px 12px", cursor: "pointer", fontSize: "12px", fontWeight: "600",
+                                  whiteSpace: "nowrap"
+                                }}
+                              >
+                                📊 Manage
+                              </button>
+                            ) : "—"}
+                          </td>
+                          {/* ✅ Active / Deactive */}
                           <td>
                             <button
                               onClick={() => handleToggleStatus(u._id, u.isActive)}
@@ -654,8 +801,234 @@ const handleDeletePdf = async (pdfId, title) => {
           </div>
         </div>
       )}
+      {/* ===== RESULT MANAGEMENT MODAL ===== */}
+      {showResultModal && selectedStudent && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
+          background: "rgba(0,0,0,0.8)", zIndex: 1000, overflowY: "auto",
+          display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "30px 15px"
+        }}>
+          <div style={{
+            background: "#1e1e2e", borderRadius: "14px", padding: "26px",
+            maxWidth: "700px", width: "100%", color: "#fff", position: "relative"
+          }}>
+            <button
+              onClick={() => { setShowResultModal(false); setShowResultForm(false); resetResultForm(); }}
+              style={{
+                position: "absolute", top: "15px", right: "15px",
+                background: "#dc2626", color: "#fff", border: "none",
+                borderRadius: "6px", padding: "6px 14px", cursor: "pointer"
+              }}
+            >
+              ✖
+            </button>
+
+            <h2 style={{ color: "#a78bfa", marginBottom: "4px" }}>📊 Results</h2>
+            <p style={{ color: "#888", marginBottom: "4px" }}>
+              Student: <strong style={{ color: "#fff" }}>{selectedStudent.name}</strong>
+            </p>
+            <p style={{ color: "#888", marginBottom: "20px" }}>
+              Enrollment No: <strong style={{ color: "#a78bfa" }}>{selectedStudent.enrollmentNumber || "N/A"}</strong>
+              {" | "}Course: <strong style={{ color: "#60a5fa" }}>{selectedStudent.enrolledCourseName || "—"}</strong>
+            </p>
+
+            {!showResultForm && (
+              <button
+                onClick={() => { resetResultForm(); setShowResultForm(true); }}
+                style={{
+                  background: "#6c63ff", color: "#fff", border: "none",
+                  borderRadius: "8px", padding: "10px 20px", cursor: "pointer",
+                  fontWeight: "600", marginBottom: "20px"
+                }}
+              >
+                + Add New Result
+              </button>
+            )}
+
+            {showResultForm && (
+              <div style={{ background: "#2a2a3e", borderRadius: "10px", padding: "20px", marginBottom: "20px" }}>
+                <h4 style={{ color: "#a78bfa", marginBottom: "14px" }}>
+                  {editingResultId ? "✏️ Edit Result" : "➕ Add New Result"}
+                </h4>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                  <div>
+                    <label style={{ fontSize: "12px", color: "#888" }}>Test Type *</label>
+                    <select
+                      value={resultForm.testType}
+                      onChange={(e) => setResultForm({ ...resultForm, testType: e.target.value })}
+                      style={resultInputStyle}
+                    >
+                      <option>Marathon Test</option>
+                      <option>Weekly Test</option>
+                      <option>Quiz Test</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "12px", color: "#888" }}>Test Name *</label>
+                    <input
+                      value={resultForm.testName}
+                      onChange={(e) => setResultForm({ ...resultForm, testName: e.target.value })}
+                      placeholder="e.g. Marathon Test #1"
+                      style={resultInputStyle}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "12px", color: "#888" }}>Marks Obtained *</label>
+                    <input
+                      type="number"
+                      value={resultForm.marksObtained}
+                      onChange={(e) => setResultForm({ ...resultForm, marksObtained: e.target.value })}
+                      placeholder="e.g. 85"
+                      style={resultInputStyle}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "12px", color: "#888" }}>Total Marks *</label>
+                    <input
+                      type="number"
+                      value={resultForm.totalMarks}
+                      onChange={(e) => setResultForm({ ...resultForm, totalMarks: e.target.value })}
+                      placeholder="e.g. 100"
+                      style={resultInputStyle}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "12px", color: "#888" }}>Date</label>
+                    <input
+                      type="date"
+                      value={resultForm.date}
+                      onChange={(e) => setResultForm({ ...resultForm, date: e.target.value })}
+                      style={resultInputStyle}
+                    />
+                  </div>
+                  <div style={{ gridColumn: "1 / -1" }}>
+                    <label style={{ fontSize: "12px", color: "#888" }}>Remarks (Optional)</label>
+                    <input
+                      value={resultForm.remarks}
+                      onChange={(e) => setResultForm({ ...resultForm, remarks: e.target.value })}
+                      placeholder="e.g. Excellent performance!"
+                      style={resultInputStyle}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
+                  <button
+                    onClick={() => { setShowResultForm(false); resetResultForm(); }}
+                    style={{
+                      background: "#374151", color: "#fff", border: "none",
+                      borderRadius: "8px", padding: "10px 18px", cursor: "pointer"
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  {!editingResultId && (
+                    <button
+                      onClick={() => handleSaveResult(false)}
+                      style={{
+                        background: "#374151", color: "#fff", border: "1px solid #555",
+                        borderRadius: "8px", padding: "10px 18px", cursor: "pointer"
+                      }}
+                    >
+                      💾 Save Draft
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleSaveResult(true)}
+                    style={{
+                      background: "#22c55e", color: "#fff", border: "none",
+                      borderRadius: "8px", padding: "10px 18px", cursor: "pointer",
+                      fontWeight: "600", flex: 1
+                    }}
+                  >
+                    {editingResultId ? "✅ Update Result" : "📤 Save & Send"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <h4 style={{ color: "#888", marginBottom: "10px", fontSize: "14px" }}>
+              📋 Results History ({studentResults.length})
+            </h4>
+
+            {studentResults.length === 0 ? (
+              <p style={{ color: "#666" }}>Abhi tak koi result add nahi hua</p>
+            ) : (
+              studentResults.map((r) => (
+                <div
+                  key={r._id}
+                  style={{
+                    background: "#252538", borderRadius: "10px", padding: "14px 18px",
+                    marginBottom: "10px", border: `1px solid ${r.sentToStudent ? "#22c55e" : "#444"}`
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "10px" }}>
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px", flexWrap: "wrap" }}>
+                        <span style={{
+                          fontSize: "11px", background: "#374151", padding: "2px 8px",
+                          borderRadius: "10px", color: "#a78bfa"
+                        }}>
+                          {r.testType}
+                        </span>
+                        <h4 style={{ margin: 0, color: "#fff", fontSize: "14px" }}>{r.testName}</h4>
+                        {r.sentToStudent && (
+                          <span style={{
+                            background: "rgba(34,197,94,0.15)", color: "#22c55e",
+                            border: "1px solid #22c55e", borderRadius: "20px",
+                            padding: "1px 8px", fontSize: "10px", fontWeight: "600"
+                          }}>
+                            ✅ Sent
+                          </span>
+                        )}
+                      </div>
+                      <p style={{ margin: "0 0 2px", color: "#ccc", fontSize: "13px" }}>
+                        Marks: <strong style={{ color: "#fff" }}>{r.marksObtained}/{r.totalMarks}</strong>
+                        {" "}({r.percentage}%)
+                      </p>
+                      <p style={{ margin: 0, color: "#666", fontSize: "12px" }}>
+                        📅 {new Date(r.date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
+                        {r.remarks && ` | 💬 ${r.remarks}`}
+                      </p>
+                    </div>
+
+                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                      {r.sentToStudent ? (
+                        <button onClick={() => handleUnsendResult(r._id, r.testName)} style={smallBtnStyle("#ef4444")}>
+                          🚫 Unsend
+                        </button>
+                      ) : (
+                        <button onClick={() => handleSendResult(r._id, r.testName)} style={smallBtnStyle("#22c55e")}>
+                          📤 Send
+                        </button>
+                      )}
+                      <button onClick={() => handleEditResult(r)} style={smallBtnStyle("#60a5fa")}>
+                        ✏️ Edit
+                      </button>
+                      <button onClick={() => handleDeleteResult(r._id, r.testName)} style={smallBtnStyle("#ef4444")}>
+                        🗑️ Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
+const resultInputStyle = {
+  width: "100%", padding: "9px 12px", background: "#1e1e2e",
+  border: "1px solid #444", borderRadius: "8px", color: "#fff",
+  fontSize: "13px", boxSizing: "border-box", marginTop: "4px"
+};
+
+const smallBtnStyle = (color) => ({
+  background: `${color}22`, color: color, border: `1px solid ${color}`,
+  borderRadius: "6px", padding: "5px 10px", cursor: "pointer", fontSize: "12px"
+});
 
 export default AdminDashboard;

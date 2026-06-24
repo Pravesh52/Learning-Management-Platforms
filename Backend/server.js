@@ -11,11 +11,9 @@ console.log("SUPABASE_URL =", process.env.SUPABASE_URL);
 console.log("SUPABASE_ANON_KEY =", process.env.SUPABASE_ANON_KEY ? "Found" : "Missing");
 console.log("SERVER FILE RUNNING");
 
-// ✅ Auto create upload folders
 if (!fs.existsSync("upload")) fs.mkdirSync("upload");
 if (!fs.existsSync("upload/photos")) fs.mkdirSync("upload/photos");
 
-// ✅ CORS
 app.use(cors({
   origin: [
     "http://localhost:5173",
@@ -29,12 +27,13 @@ app.use(express.json());
 app.use("/upload", express.static(path.join(__dirname, "upload")));
 
 // ✅ ROUTES
-app.use("/api/admin",       require("./routes/adminRoutes"));
-app.use("/api/courses",     require("./routes/courseRoutes"));
-app.use("/api/auth",        require("./routes/authRoutes"));
-app.use("/api/pdfs",        require("./routes/pdfRoutes"));
+app.use("/api/admin",         require("./routes/adminRoutes"));
+app.use("/api/courses",       require("./routes/courseRoutes"));
+app.use("/api/auth",          require("./routes/authRoutes"));
+app.use("/api/pdfs",          require("./routes/pdfRoutes"));
 app.use("/api/notifications", require("./routes/notificationRoutes"));
-app.use("/api/enrollments", require("./routes/enrollmentRoutes")); // ✅ NEW
+app.use("/api/enrollments",   require("./routes/enrollmentRoutes"));
+app.use("/api/results",       require("./routes/resultRoutes")); // ✅ NEW
 
 mongoose
   .connect(process.env.MONGO_URI)

@@ -1,6 +1,13 @@
 const mongoose = require("mongoose");
 
 const enrollmentSchema = new mongoose.Schema({
+  // ===== ENROLLMENT NUMBER (NEW) =====
+  enrollmentNumber: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+
   // ===== STUDENT REFERENCE =====
   student: {
     type: mongoose.Schema.Types.ObjectId,
@@ -23,7 +30,7 @@ const enrollmentSchema = new mongoose.Schema({
   gender:       { type: String, required: true },
   mobile:       { type: String, required: true },
   email:        { type: String, required: true },
-  photo:        { type: String, default: "" }, // filename
+  photo:        { type: String, default: "" },
 
   // ===== STEP 2: ADDRESS =====
   fullAddress:  { type: String, required: true },
@@ -34,9 +41,9 @@ const enrollmentSchema = new mongoose.Schema({
 
   // ===== STEP 3: ACADEMIC =====
   schoolName:   { type: String, required: true },
-  board:        { type: String, required: true }, // CBSE / MP Board
-  presentClass: { type: String, required: true }, // 9th/10th/11th/12th
-  stream:       { type: String, required: true }, // PCM/PCB
+  board:        { type: String, required: true },
+  presentClass: { type: String, required: true },
+  stream:       { type: String, required: true },
   prevPercentage: { type: String, required: true },
 
   // ===== STEP 4: FEES =====

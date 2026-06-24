@@ -3,12 +3,8 @@ const User = require("../models/user");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-// const nodemailer = require("nodemailer");
 const { Resend } = require("resend");
 const resend = new Resend(process.env.RESEND_API_KEY);
-
-console.log("EMAIL_USER:", process.env.EMAIL_USER);
-console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "SET ✅" : "NOT SET ❌");
 
 // ===== MULTER SETUP FOR PHOTO =====
 const storage = multer.diskStorage({
@@ -23,36 +19,29 @@ const storage = multer.diskStorage({
 });
 exports.upload = multer({ storage });
 
-// ===== EMAIL SENDER =====
-// ✅ FIX: transporter ek baar banao — baar baar mat banao
-// const transporter = nodemailer.createTransport({
-//   service: "gmail",
-//   auth: {
-//     user: process.env.EMAIL_USER,
-//     pass: process.env.EMAIL_PASS,
-//   },
-// });
+// ===== ENROLLMENT NUMBER GENERATOR =====
+// Format: CA2026001, CA2026002, ...
+const generateEnrollmentNumber = async () => {
+  const year = new Date().getFullYear();
+  const prefix = `CA${year}`;
 
-// const sendEmail = async (to, subject, html) => {
-//   // ✅ FIX: Email_USER nahi hai toh skip karo — server crash nahi hoga
-//   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-//     console.log("⚠️ Email credentials missing — email skip kar rahe hain");
-//     return;
-//   }
-//   try {
-//     await transporter.sendMail({
-//       from: `"Climax Academy" <${process.env.EMAIL_USER}>`,
-//       to,
-//       subject,
-//       html,
-//     });
-//     console.log("✅ Email sent to:", to);
-//   } catch (err) {
-//     // ✅ FIX: Email fail hone pe enrollment fail nahi hogi
-//     console.log("❌ Email error (non-blocking):", err.message);
-//   }
-// };
+  // ✅ Is saal ka last enrollment number dhundo
+  const lastEnrollment = await Enrollment.findOne({
+    enrollmentNumber: { $regex: `^${prefix}` },
+  }).sort({ enrollmentNumber: -1 });
 
+  let nextNumber = 1;
+  if (lastEnrollment) {
+    const lastNum = parseInt(lastEnrollment.enrollmentNumber.slice(prefix.length));
+    nextNumber = lastNum + 1;
+  }
+
+  // 3 digit padding: 001, 002, ... 999
+  const paddedNumber = String(nextNumber).padStart(3, "0");
+  return `${prefix}${paddedNumber}`;
+};
+
+// ===== EMAIL SENDER (Resend) =====
 const sendEmail = async (to, subject, html) => {
   if (!process.env.RESEND_API_KEY) {
     console.log("⚠️ RESEND_API_KEY missing");
@@ -60,8 +49,9 @@ const sendEmail = async (to, subject, html) => {
   }
   try {
     const { data, error } = await resend.emails.send({
-      from: "Climax Academy <onboarding@resend.dev>", // ✅ Ye use karo pehle
-      to,
+      from: "Climax Academy <onboarding@resend.dev>",
+      to: process.env.EMAIL_USER || to, // Domain verify hone tak admin email pe
+      replyTo: to,
       subject,
       html,
     });
@@ -72,27 +62,6 @@ const sendEmail = async (to, subject, html) => {
     console.log("✅ Email sent! ID:", data.id);
   } catch (err) {
     console.log("❌ Email error:", err.message);
-  }
-};
-
-// ===== EMAIL TEST =====
-exports.testEmail = async (req, res) => {
-  try {
-    const { data, error } = await resend.emails.send({
-      from: "Climax Academy <onboarding@resend.dev>",
-      to: "Pravesht252@gmail.com",
-      subject: "✅ Test Email from LMS",
-      html: "<h1>Email kaam kar raha hai!</h1>",
-    });
-    if (error) {
-      console.log("❌ Resend error:", error);
-      return res.json({ success: false, error });
-    }
-    console.log("✅ Email sent! ID:", data.id);
-    res.json({ success: true, id: data.id });
-  } catch (err) {
-    console.log("❌ Error:", err.message);
-    res.json({ success: false, error: err.message });
   }
 };
 
@@ -107,12 +76,10 @@ exports.createEnrollment = async (req, res) => {
       feesMode, totalFees, batch,
     } = req.body;
 
-    // ✅ Validation
     if (!studentId || !courseId || !courseName) {
       return res.status(400).json({ message: "Student, Course aur Course Name required hai" });
     }
 
-    // ✅ Already enrolled check
     const existing = await Enrollment.findOne({ student: studentId, course: courseId });
     if (existing) {
       return res.status(400).json({ message: "Aap already is course mein enrolled hain" });
@@ -120,8 +87,11 @@ exports.createEnrollment = async (req, res) => {
 
     const photo = req.file ? req.file.filename : "";
 
-    // ✅ Enrollment create karo
+    // ✅ Generate unique enrollment number
+    const enrollmentNumber = await generateEnrollmentNumber();
+
     const enrollment = await Enrollment.create({
+      enrollmentNumber,
       student: studentId,
       course: courseId,
       courseName,
@@ -132,17 +102,21 @@ exports.createEnrollment = async (req, res) => {
       feesMode, totalFees: Number(totalFees) || 0, batch: batch || "",
     });
 
-    // ✅ User ka isEnrolled update karo
+    // ✅ User update — enrollmentNumber bhi save karo
     await User.findByIdAndUpdate(studentId, {
       isEnrolled: true,
       enrolledCourse: courseId,
       enrolledCourseName: courseName,
+      enrollmentNumber, // ✅ NEW
     });
 
-    // ✅ Pehle response bhejo — phir email (non-blocking)
-    res.status(201).json({ message: "Enrolled successfully", enrollment });
+    res.status(201).json({
+      message: "Enrolled successfully",
+      enrollment,
+      enrollmentNumber, // ✅ Frontend ko bhejo
+    });
 
-    // ✅ FIX: Email response ke BAAD bhejo taaki submit button fast respond kare
+    // ===== EMAIL (non-blocking) =====
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f9f9f9; padding: 30px; border-radius: 10px;">
         <div style="text-align: center; margin-bottom: 20px;">
@@ -152,53 +126,26 @@ exports.createEnrollment = async (req, res) => {
         <hr style="border: 1px solid #eee;"/>
         <p style="color: #333;">Dear <strong>${studentName}</strong>,</p>
         <p style="color: #555;">You have been successfully enrolled in <strong style="color: #6c63ff;">${courseName}</strong>!</p>
+        <div style="background: #6c63ff; color: white; padding: 15px; border-radius: 8px; text-align: center; margin: 15px 0;">
+          <p style="margin: 0; font-size: 13px;">Your Enrollment Number</p>
+          <p style="margin: 5px 0 0; font-size: 24px; font-weight: bold;">${enrollmentNumber}</p>
+        </div>
         <table style="width:100%; border-collapse: collapse; margin-top: 20px;">
           <tr style="background: #6c63ff; color: white;">
-            <th style="padding: 10px; text-align: left; border-radius: 6px 0 0 0;">Details</th>
-            <th style="padding: 10px; text-align: left; border-radius: 0 6px 0 0;">Info</th>
+            <th style="padding: 10px; text-align: left;">Details</th>
+            <th style="padding: 10px; text-align: left;">Info</th>
           </tr>
-          <tr style="background: #fff;">
-            <td style="padding: 10px; border: 1px solid #eee;">📚 Course</td>
-            <td style="padding: 10px; border: 1px solid #eee;"><strong>${courseName}</strong></td>
-          </tr>
-          <tr style="background: #f9f9f9;">
-            <td style="padding: 10px; border: 1px solid #eee;">👤 Student Name</td>
-            <td style="padding: 10px; border: 1px solid #eee;">${studentName}</td>
-          </tr>
-          <tr style="background: #fff;">
-            <td style="padding: 10px; border: 1px solid #eee;">📧 Email</td>
-            <td style="padding: 10px; border: 1px solid #eee;">${email}</td>
-          </tr>
-          <tr style="background: #f9f9f9;">
-            <td style="padding: 10px; border: 1px solid #eee;">📱 Mobile</td>
-            <td style="padding: 10px; border: 1px solid #eee;">${mobile}</td>
-          </tr>
-          <tr style="background: #fff;">
-            <td style="padding: 10px; border: 1px solid #eee;">🎓 Class</td>
-            <td style="padding: 10px; border: 1px solid #eee;">${presentClass || "—"}</td>
-          </tr>
-          <tr style="background: #f9f9f9;">
-            <td style="padding: 10px; border: 1px solid #eee;">💰 Fees Mode</td>
-            <td style="padding: 10px; border: 1px solid #eee;">${feesMode === "online" ? "💳 Online" : "💵 Offline"}</td>
-          </tr>
-          <tr style="background: #fff;">
-            <td style="padding: 10px; border: 1px solid #eee;">📅 Enrolled On</td>
-            <td style="padding: 10px; border: 1px solid #eee;">${new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" })}</td>
-          </tr>
+          <tr style="background: #fff;"><td style="padding: 8px 10px; border: 1px solid #ddd;">Enrollment No.</td><td style="padding: 8px 10px; border: 1px solid #ddd;"><strong>${enrollmentNumber}</strong></td></tr>
+          <tr style="background: #f5f5f5;"><td style="padding: 8px 10px; border: 1px solid #ddd;">Course</td><td style="padding: 8px 10px; border: 1px solid #ddd;">${courseName}</td></tr>
+          <tr style="background: #fff;"><td style="padding: 8px 10px; border: 1px solid #ddd;">Student Name</td><td style="padding: 8px 10px; border: 1px solid #ddd;">${studentName}</td></tr>
+          <tr style="background: #f5f5f5;"><td style="padding: 8px 10px; border: 1px solid #ddd;">Email</td><td style="padding: 8px 10px; border: 1px solid #ddd;">${email}</td></tr>
+          <tr style="background: #fff;"><td style="padding: 8px 10px; border: 1px solid #ddd;">Mobile</td><td style="padding: 8px 10px; border: 1px solid #ddd;">${mobile}</td></tr>
+          <tr style="background: #f5f5f5;"><td style="padding: 8px 10px; border: 1px solid #ddd;">Fees Mode</td><td style="padding: 8px 10px; border: 1px solid #ddd;">${feesMode === "online" ? "Online" : "Offline"}</td></tr>
         </table>
-        <div style="margin-top: 25px; padding: 15px; background: #f0f0ff; border-radius: 8px; border-left: 4px solid #6c63ff;">
-          <p style="margin: 0; color: #555; font-size: 14px;">🌟 Best of luck with your studies! Our team will contact you soon with further details.</p>
-        </div>
-        <p style="color: #6c63ff; font-weight: bold; margin-top: 20px;">— Climax Academy Team</p>
+        <p style="color: #6c63ff; font-weight: bold; margin-top: 20px;">- Climax Academy Team</p>
       </div>
     `;
-
-    // ✅ Non-blocking email — await mat karo yahan
-    sendEmail(
-      email,
-      `✅ Enrollment Confirmed - ${courseName} | Climax Academy`,
-      emailHtml
-    );
+    sendEmail(email, `✅ Enrollment Confirmed - ${courseName} | Climax Academy`, emailHtml);
 
   } catch (error) {
     console.log("ENROLLMENT ERROR:", error);
@@ -211,7 +158,7 @@ exports.checkEnrollment = async (req, res) => {
   try {
     const { studentId, courseId } = req.params;
     const enrollment = await Enrollment.findOne({ student: studentId, course: courseId });
-    res.json({ isEnrolled: !!enrollment });
+    res.json({ isEnrolled: !!enrollment, enrollmentNumber: enrollment?.enrollmentNumber || null });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -31,6 +31,8 @@ const Dashboard = () => {
   const [enrollLoading, setEnrollLoading] = useState(false);
   const [enrollSuccess, setEnrollSuccess] = useState(false);
   const [photoFile, setPhotoFile] = useState(null);
+  const [myResults, setMyResults] = useState([]);
+  const [lastEnrollmentNumber, setLastEnrollmentNumber] = useState("");
 
   const [formData, setFormData] = useState({
     studentName: user?.name || "",
@@ -109,6 +111,20 @@ const Dashboard = () => {
     }
   };
 
+  // ===== FETCH MY RESULTS =====
+  const fetchMyResults = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/results/my/${user?.id}`, {
+        headers: authHeaders,
+      });
+      const data = await res.json();
+      setMyResults(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.log("Results fetch error:", err);
+      setMyResults([]);
+    }
+  };
+
   useEffect(() => {
     if (activeTab === "courses") {
       fetchCourses();
@@ -116,6 +132,7 @@ const Dashboard = () => {
     }
     if (activeTab === "messages") fetchMessages();
     if (activeTab === "pdfs") fetchPdfs();
+    if (activeTab === "results") fetchMyResults();
   }, [activeTab]);
 
   // ===== Pending enroll course auto-open =====
@@ -232,9 +249,11 @@ const Dashboard = () => {
         isEnrolled: true,
         enrolledCourse: selectedCourse._id,
         enrolledCourseName: selectedCourse.title,
+        enrollmentNumber: data.enrollmentNumber || "",
       };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setEnrolledCourseIds((prev) => [...prev, selectedCourse._id]);
+      setLastEnrollmentNumber(data.enrollmentNumber || "");
 
       // ✅ Turant success dikhao
       setEnrollSuccess(true);
@@ -270,6 +289,14 @@ const Dashboard = () => {
             {currentUser?.isEnrolled ? "✅ Enrolled" : "❌ Not Enrolled"}
           </h2>
         </div>
+        {currentUser?.enrollmentNumber && (
+          <div className="stat-card">
+            <p>Enrollment Number</p>
+            <h2 style={{ fontSize: "16px", color: "#a78bfa" }}>
+              🆔 {currentUser.enrollmentNumber}
+            </h2>
+          </div>
+        )}
         {currentUser?.isEnrolled && (
           <div className="stat-card">
             <p>Enrolled Course</p>
@@ -407,12 +434,114 @@ const Dashboard = () => {
     </div>
   );
 
+  const renderResults = () => {
+    const getTestIcon = (type) => {
+      if (type === "Marathon Test") return "🏃";
+      if (type === "Weekly Test") return "📅";
+      if (type === "Quiz Test") return "❓";
+      return "📝";
+    };
+    const getGradeColor = (percentage) => {
+      if (percentage >= 90) return "#22c55e";
+      if (percentage >= 75) return "#60a5fa";
+      if (percentage >= 50) return "#f59e0b";
+      return "#ef4444";
+    };
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+
+    return (
+      <div className="section">
+        <h2>📊 My Results</h2>
+
+        {currentUser?.enrollmentNumber && (
+          <div style={{
+            background: "linear-gradient(135deg, #6c63ff, #a78bfa)",
+            borderRadius: "12px", padding: "16px 20px", marginBottom: "20px",
+            display: "flex", justifyContent: "space-between", alignItems: "center"
+          }}>
+            <div>
+              <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "12px", margin: "0 0 4px" }}>
+                Your Enrollment Number
+              </p>
+              <p style={{ color: "#fff", fontSize: "22px", fontWeight: "700", margin: 0 }}>
+                {currentUser.enrollmentNumber}
+              </p>
+            </div>
+            <div style={{ fontSize: "40px" }}>🎓</div>
+          </div>
+        )}
+
+        {myResults.length === 0 ? (
+          <p className="empty-text">Abhi tak koi result publish nahi hua hai.</p>
+        ) : (
+          <div style={{ display: "grid", gap: "14px" }}>
+            {myResults.map((r) => (
+              <div
+                key={r._id}
+                style={{
+                  background: "#1e1e2e", borderRadius: "12px", padding: "18px 20px",
+                  border: "1px solid #333",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px", flexWrap: "wrap", gap: "8px" }}>
+                  <div>
+                    <span style={{
+                      fontSize: "12px", background: "#2a2a3e", padding: "3px 10px",
+                      borderRadius: "12px", color: "#a78bfa", marginRight: "8px"
+                    }}>
+                      {getTestIcon(r.testType)} {r.testType}
+                    </span>
+                    <h3 style={{ margin: "8px 0 0", color: "#fff", fontSize: "17px" }}>
+                      {r.testName}
+                    </h3>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <p style={{
+                      margin: 0, fontSize: "26px", fontWeight: "800",
+                      color: getGradeColor(r.percentage)
+                    }}>
+                      {r.percentage}%
+                    </p>
+                  </div>
+                </div>
+
+                <div style={{
+                  display: "flex", justifyContent: "space-between",
+                  background: "#2a2a3e", borderRadius: "8px", padding: "10px 14px", marginBottom: "8px"
+                }}>
+                  <span style={{ color: "#888", fontSize: "13px" }}>Marks Obtained</span>
+                  <span style={{ color: "#fff", fontWeight: "700", fontSize: "13px" }}>
+                    {r.marksObtained} / {r.totalMarks}
+                  </span>
+                </div>
+
+                <p style={{ color: "#666", fontSize: "12px", margin: "0 0 4px" }}>
+                  📅 {new Date(r.date).toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" })}
+                </p>
+
+                {r.remarks && (
+                  <p style={{
+                    color: "#a78bfa", fontSize: "13px", margin: "8px 0 0",
+                    background: "rgba(167,139,250,0.1)", padding: "8px 12px", borderRadius: "6px"
+                  }}>
+                    💬 {r.remarks}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case "dashboard": return renderDashboard();
       case "courses": return renderCourses();
       case "messages": return renderMessages();
       case "pdfs": return renderPdfs();
+      case "results": return renderResults();
       default: return renderDashboard();
     }
   };
@@ -420,6 +549,7 @@ const Dashboard = () => {
   const tabs = [
     { id: "dashboard", label: "🏠 Dashboard" },
     { id: "courses", label: "📚 Courses" },
+    { id: "results", label: "📊 Results" },
     { id: "messages", label: "💬 Messages" },
     { id: "pdfs", label: "📄 PDFs" },
   ];
@@ -526,6 +656,17 @@ const Dashboard = () => {
                 >
                   {selectedCourse?.title}
                 </p>
+                {lastEnrollmentNumber && (
+                  <div style={{
+                    background: "#6c63ff", color: "#fff", padding: "14px",
+                    borderRadius: "10px", textAlign: "center", marginBottom: "16px"
+                  }}>
+                    <p style={{ margin: 0, fontSize: "12px", opacity: 0.85 }}>Your Enrollment Number</p>
+                    <p style={{ margin: "4px 0 0", fontSize: "24px", fontWeight: "800" }}>
+                      {lastEnrollmentNumber}
+                    </p>
+                  </div>
+                )}
                 <div
                   style={{
                     background: "#2a2a3e", borderRadius: "10px",
@@ -557,10 +698,10 @@ const Dashboard = () => {
                 </p>
                 <button
                   onClick={() => {
-                            setShowEnrollForm(false);
-                            setEnrollSuccess(false);
-                            navigate("/dashboard");
-                          }}
+                    setShowEnrollForm(false);
+                    setEnrollSuccess(false);
+                    window.location.reload(); // Dashboard refresh
+                  }}
                   style={{
                     background: "#6c63ff", color: "#fff", border: "none",
                     borderRadius: "10px", padding: "14px 50px",
