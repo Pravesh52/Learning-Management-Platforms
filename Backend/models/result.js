@@ -36,11 +36,10 @@ const resultSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // ✅ Auto calculate percentage before save
-resultSchema.pre("save", function (next) {
+resultSchema.pre("save", function () {
   if (this.totalMarks > 0) {
     this.percentage = Math.round((this.marksObtained / this.totalMarks) * 100 * 100) / 100;
   }
-  next();
 });
 
 module.exports = mongoose.model("Result", resultSchema);

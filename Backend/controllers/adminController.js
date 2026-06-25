@@ -31,7 +31,7 @@ exports.getUsers = async (req, res) => {
 exports.getStudents = async (req, res) => {
   try {
     const students = await User.find({ role: "student" })
-      .select("name email mobilenumber isActive isEnrolled enrolledCourseName createdAt");
+       .select("name email mobilenumber isActive isEnrolled enrolledCourseName enrollmentNumber createdAt");
 
     // For each student, get their enrollment form
     const enrollments = await Enrollment.find().select("student _id");
