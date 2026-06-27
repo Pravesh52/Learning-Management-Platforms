@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import "../../styles/AdminDashboard.css";
+import "../pages/../styles/AdminDashboard.css";
 import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;

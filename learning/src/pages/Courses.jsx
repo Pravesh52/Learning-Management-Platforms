@@ -1,26 +1,25 @@
 import React, { useEffect, useState } from "react";
-import "../styles/Courses.css";
-import { useNavigate } from "react-router-dom";
-import Blogs from "./Blogs";
+import "./Courses.css";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+import CourseCard from "../components/CourseCard/CourseCard";
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [filter, setFilter] = useState("All");
 
   useEffect(() => {
     fetchPublicCourses();
   }, []);
 
-  // ✅ BUG 1 FIX: Ab DB se public courses aayenge, localStorage nahi
   const fetchPublicCourses = async () => {
     try {
       setLoading(true);
       const res = await fetch(`${BASE_URL}/api/courses/public`);
       const data = await res.json();
-      setCourses(data);
+      setCourses(Array.isArray(data) ? data : []);
     } catch (error) {
       console.log("Courses fetch error:", error);
     } finally {
@@ -28,66 +27,54 @@ const Courses = () => {
     }
   };
 
-  // ✅ BUG 2 FIX: Enroll Now click → Login pe le jao agar logged in nahi
-  const handleEnrollClick = (courseId) => {
-    const token = localStorage.getItem("token");
-    const user = localStorage.getItem("user");
+  const classOptions = ["All", ...new Set(courses.map((c) => c.className).filter(Boolean))];
 
-    if (!token || !user) {
-      // Save intended course to redirect back after login
-      localStorage.setItem("pendingEnrollCourse", courseId);
-      navigate("/login");
-      return;
-    }
-
-    // Agar already logged in toh dashboard courses tab pe le jao
-    navigate("/dashboard?tab=courses");
-  };
+  const filteredCourses =
+    filter === "All" ? courses : courses.filter((c) => c.className === filter);
 
   return (
-    <>
-      <section className="courses">
-        <div className="courses-header">
-          <h4 className="sub-title">COURSES _______</h4>
-          <h2 className="main-title">Choose Our Top Courses</h2>
-        </div>
+    <div className="courses-page">
+      {/* ===== PAGE HEADER ===== */}
+      <div className="courses-page-header">
+        <h4 className="sub-title">OUR COURSES</h4>
+        <h2 className="main-title">Choose Your Best Course</h2>
+        <p className="page-desc">
+          Comprehensive coaching for JEE, NEET, MP Board, UP Board, CBSE Board, Police & Defence
+          exams — designed by experienced faculty for guaranteed results.
+        </p>
+      </div>
 
-        <div className="course-container">
-          {loading ? (
-            <div style={{ textAlign: "center", padding: "60px", color: "#888", width: "100%" }}>
-              <p>Loading courses...</p>
-            </div>
-          ) : courses.length > 0 ? (
-            courses.map((course) => (
-              <div className="course-card" key={course._id}>
-                <div className="img-box">
-                  <img
-                    src={`https://via.placeholder.com/300x200?text=${encodeURIComponent(course.title)}`}
-                    alt={course.title}
-                  />
-                </div>
-                <div className="course-content">
-                  <h3>{course.title}</h3>
-                  <h5>⏰ {course.timing}</h5>
-                  {/* ✅ BUG 4: Show new fields */}
-                  {course.batch && <p style={{ color: "#a78bfa", fontSize: "13px" }}>📅 Batch: {course.batch}</p>}
-                  {course.className && <p style={{ color: "#60a5fa", fontSize: "13px" }}>🎓 Class: {course.className}</p>}
-                  {course.teacherName && <p style={{ color: "#34d399", fontSize: "13px" }}>👨‍🏫 Teacher: {course.teacherName}</p>}
-                  <p className="price">₹ {course.price}</p>
-                  <button onClick={() => handleEnrollClick(course._id)}>Enroll Now</button>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div style={{ textAlign: "center", padding: "60px 20px", color: "#888", width: "100%" }}>
-              <h3>No Courses Available Right Now</h3>
-              <p>Admin will add new courses soon. Stay tuned!</p>
-            </div>
-          )}
+      {/* ===== FILTER TABS ===== */}
+      {classOptions.length > 1 && (
+        <div className="courses-filter-bar">
+          {classOptions.map((opt) => (
+            <button
+              key={opt}
+              className={`filter-tab ${filter === opt ? "active" : ""}`}
+              onClick={() => setFilter(opt)}
+            >
+              {opt}
+            </button>
+          ))}
         </div>
-      </section>
-      <Blogs />
-    </>
+      )}
+
+      {/* ===== COURSE GRID ===== */}
+      <div className="courses-page-grid">
+        {loading ? (
+          <div className="courses-loading-state">
+            <p>Loading courses...</p>
+          </div>
+        ) : filteredCourses.length > 0 ? (
+          filteredCourses.map((course) => <CourseCard course={course} key={course._id} />)
+        ) : (
+          <div className="courses-empty-state">
+            <h3>No Courses Available Right Now</h3>
+            <p>Please check back soon — new batches are added regularly.</p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

@@ -1,0 +1,248 @@
+.contact-us-page {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 60px 24px 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.contact-us-header {
+  text-align: center;
+  max-width: 750px;
+  margin: 0 auto 40px;
+}
+
+.contact-us-header .sub-title {
+  color: #a31f1f;
+  font-weight: 700;
+  letter-spacing: 2px;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.contact-us-header .main-title {
+  color: #0a1f44;
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0 0 14px;
+}
+
+.page-desc {
+  color: #555;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.contact-us-container {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+/* CONTACT INFO */
+.contact-us-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contact-info-card {
+  background: #f5f7fa;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.contact-info-icon {
+  font-size: 26px;
+  margin-bottom: 8px;
+}
+
+.contact-info-card h3 {
+  color: #0a1f44;
+  font-size: 15px;
+  margin: 0 0 8px;
+}
+
+.contact-info-card a,
+.contact-info-card p {
+  color: #555;
+  font-size: 14px;
+  text-decoration: none;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.contact-info-card a:hover {
+  color: #a31f1f;
+}
+
+.contact-branches-list {
+  background: #0a1f44;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.contact-branches-list h3 {
+  color: #fff;
+  font-size: 15px;
+  margin: 0 0 14px;
+}
+
+.contact-branch-item {
+  margin-bottom: 14px;
+}
+
+.contact-branch-item strong {
+  color: #fff;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.contact-branch-item p {
+  color: #cdd6e8;
+  font-size: 13px;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.contact-socials {
+  display: flex;
+  gap: 12px;
+}
+
+.contact-socials a {
+  flex: 1;
+  text-align: center;
+  background: #f5f7fa;
+  padding: 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #0a1f44;
+  font-weight: 600;
+  font-size: 13px;
+  transition: background 0.2s ease;
+}
+
+.contact-socials a:hover {
+  background: #e6eaf0;
+}
+
+/* CONTACT FORM */
+.contact-us-form {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 30px;
+}
+
+.contact-us-form h3 {
+  color: #0a1f44;
+  margin: 0 0 20px;
+  font-size: 19px;
+}
+
+.form-success-msg {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.contact-us-form input,
+.contact-us-form select,
+.contact-us-form textarea {
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  font-family: inherit;
+}
+
+.contact-us-form input:focus,
+.contact-us-form select:focus,
+.contact-us-form textarea:focus {
+  border-color: #0a1f44;
+}
+
+.full-width-select {
+  margin-bottom: 14px;
+}
+
+.contact-us-form textarea {
+  margin-bottom: 18px;
+  resize: vertical;
+}
+
+.contact-submit-btn {
+  background: #a31f1f;
+  color: #fff;
+  border: none;
+  padding: 14px 36px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.contact-submit-btn:hover {
+  background: #7a1212;
+}
+
+/* MAP */
+.contact-map-wrapper {
+  width: 100%;
+  height: 400px;
+  margin: 0 -24px;
+}
+
+@media (min-width: 1349px) {
+  .contact-map-wrapper {
+    margin: 0;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 40px;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1024px) {
+  .contact-us-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-us-header .main-title {
+    font-size: 24px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-us-page {
+    padding: 40px 16px 0;
+  }
+
+  .contact-map-wrapper {
+    margin: 0 -16px;
+    height: 300px;
+  }
+}

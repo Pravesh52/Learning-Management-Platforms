@@ -1,0 +1,700 @@
+/* ============================================================
+   CLIMAX ACADEMY — HOME PAGE STYLES
+   Color Scheme: Navy Blue (#0a1f44) + Red (#a31f1f)
+   ============================================================ */
+
+:root {
+  --navy: #0a1f44;
+  --navy-light: #1a3a6e;
+  --red: #a31f1f;
+  --red-light: #c92a2a;
+  --white: #ffffff;
+  --gray-bg: #f5f7fa;
+  --text-dark: #1c1c1c;
+  --text-gray: #555;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.home-page {
+  width: 100%;
+  overflow-x: hidden;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* ============================================================
+   HERO SLIDER
+   ============================================================ */
+.hero-slider {
+  position: relative;
+  width: 100%;
+  height: 520px;
+  overflow: hidden;
+}
+
+.hero-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  padding: 20px;
+}
+
+.hero-slide.active {
+  opacity: 1;
+}
+
+.hero-content {
+  text-align: center;
+  color: #fff;
+  max-width: 800px;
+  padding: 0 20px;
+}
+
+.hero-content h1 {
+  font-size: 42px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.hero-content p {
+  font-size: 18px;
+  margin-bottom: 24px;
+  opacity: 0.95;
+}
+
+.hero-btn {
+  display: inline-block;
+  background: var(--red);
+  color: #fff;
+  padding: 14px 36px;
+  border-radius: 8px;
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  border: 2px solid var(--red);
+}
+
+.hero-btn:hover {
+  background: transparent;
+  border-color: #fff;
+}
+
+.hero-dots {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 5;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dot.active {
+  background: #fff;
+  width: 28px;
+  border-radius: 6px;
+}
+
+/* ============================================================
+   STATS SECTION
+   ============================================================ */
+.stats-section {
+  background: var(--navy);
+  padding: 40px 20px;
+}
+
+.stats-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  text-align: center;
+}
+
+.stat-box h2 {
+  color: var(--red-light);
+  font-size: 38px;
+  font-weight: 800;
+  margin: 0 0 6px;
+}
+
+.stat-box p {
+  color: #d0d8e8;
+  font-size: 14px;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ============================================================
+   SECTION HEADINGS (Reusable)
+   ============================================================ */
+.section-heading {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 40px;
+  padding: 0 20px;
+}
+
+.sub-title {
+  color: var(--red);
+  font-weight: 700;
+  letter-spacing: 2px;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.main-title {
+  color: var(--navy);
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0 0 10px;
+}
+
+.section-desc {
+  color: var(--text-gray);
+  font-size: 15px;
+}
+
+/* ============================================================
+   COURSES PREVIEW SECTION
+   ============================================================ */
+.courses-preview-section {
+  padding: 70px 20px;
+  background: #fff;
+}
+
+.courses-preview-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.course-preview-card {
+  background: var(--gray-bg);
+  border-radius: 14px;
+  padding: 30px 24px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  display: block;
+}
+
+.course-preview-card:hover {
+  border-color: var(--red);
+  transform: translateY(-6px);
+  box-shadow: 0 10px 24px rgba(10, 31, 68, 0.15);
+}
+
+.course-preview-icon {
+  font-size: 40px;
+  margin-bottom: 14px;
+}
+
+.course-preview-card h3 {
+  color: var(--navy);
+  font-size: 20px;
+  margin: 0 0 8px;
+}
+
+.course-preview-card p {
+  color: var(--text-gray);
+  font-size: 14px;
+  margin: 0 0 14px;
+}
+
+.learn-more {
+  color: var(--red);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* ============================================================
+   SUBJECTS SECTION
+   ============================================================ */
+.subjects-section {
+  padding: 70px 20px;
+  background: var(--gray-bg);
+}
+
+.subjects-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.subject-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  border-top: 4px solid var(--navy);
+}
+
+.subject-card.chemistry {
+  border-top-color: var(--red);
+}
+
+.subject-card h3 {
+  color: var(--navy);
+  font-size: 22px;
+  margin: 0 0 12px;
+}
+
+.subject-card p {
+  color: var(--text-gray);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   BRANCHES SECTION
+   ============================================================ */
+.branches-section {
+  padding: 70px 20px;
+  background: #fff;
+}
+
+.branches-preview-grid {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.branch-preview-card {
+  background: var(--gray-bg);
+  border-radius: 14px;
+  padding: 28px;
+  text-align: center;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.branch-preview-card:hover {
+  border-color: var(--navy);
+}
+
+.branch-icon {
+  font-size: 34px;
+  margin-bottom: 10px;
+}
+
+.branch-preview-card h3 {
+  color: var(--navy);
+  font-size: 18px;
+  margin: 0 0 8px;
+}
+
+.branch-preview-card p {
+  color: var(--text-gray);
+  font-size: 14px;
+  margin: 0;
+}
+
+.view-more-btn {
+  display: inline-block;
+  border: 2px solid var(--navy);
+  color: var(--navy);
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.view-more-btn:hover {
+  background: var(--navy);
+  color: #fff;
+}
+
+/* ============================================================
+   NOTES PROMO SECTION
+   ============================================================ */
+.notes-promo-section {
+  background: linear-gradient(135deg, var(--red) 0%, #7a1212 100%);
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.notes-promo-content {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.notes-promo-content h2 {
+  color: #fff;
+  font-size: 30px;
+  font-weight: 800;
+  margin: 0 0 14px;
+}
+
+.notes-promo-content p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  margin: 0 0 24px;
+}
+
+.notes-promo-content .hero-btn {
+  background: #fff;
+  color: var(--red);
+  border-color: #fff;
+}
+
+.notes-promo-content .hero-btn:hover {
+  background: transparent;
+  color: #fff;
+  border-color: #fff;
+}
+
+/* ============================================================
+   TESTIMONIALS SECTION
+   ============================================================ */
+.testimonials-section {
+  padding: 70px 20px;
+  background: var(--gray-bg);
+}
+
+.testimonials-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.testimonial-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 30px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  position: relative;
+}
+
+.quote-icon {
+  font-size: 50px;
+  color: var(--red);
+  opacity: 0.2;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-weight: 800;
+}
+
+.testimonial-text {
+  color: var(--text-gray);
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.testimonial-name {
+  color: var(--navy);
+  font-size: 16px;
+  margin: 0 0 4px;
+}
+
+.testimonial-role {
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ============================================================
+   BLOG PREVIEW SECTION
+   ============================================================ */
+.blog-preview-section {
+  padding: 70px 20px;
+  background: #fff;
+}
+
+.blog-preview-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.blog-preview-card {
+  background: var(--gray-bg);
+  border-radius: 14px;
+  padding: 26px;
+  text-decoration: none;
+  display: block;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.blog-preview-card:hover {
+  border-color: var(--navy);
+  transform: translateY(-4px);
+}
+
+.blog-preview-date {
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.blog-preview-card h3 {
+  color: var(--navy);
+  font-size: 18px;
+  margin: 0 0 10px;
+  line-height: 1.4;
+}
+
+.blog-preview-card p {
+  color: var(--text-gray);
+  font-size: 14px;
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
+
+.read-more {
+  color: var(--red);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* ============================================================
+   CONTACT QUICK FORM ("Got Any Questions?")
+   ============================================================ */
+.contact-quick-section {
+  background: var(--navy);
+  padding: 70px 20px;
+}
+
+.contact-quick-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 50px;
+  align-items: center;
+}
+
+.contact-quick-text h2 {
+  color: #fff;
+  font-size: 30px;
+  font-weight: 800;
+  margin: 0 0 14px;
+}
+
+.contact-quick-text p {
+  color: #cdd6e8;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.contact-quick-form {
+  background: #fff;
+  border-radius: 14px;
+  padding: 28px;
+}
+
+.form-success-msg {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.contact-quick-form input,
+.contact-quick-form select {
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  width: 100%;
+  outline: none;
+  transition: border 0.2s ease;
+}
+
+.contact-quick-form input:focus,
+.contact-quick-form select:focus {
+  border-color: var(--navy);
+}
+
+.submit-btn {
+  background: var(--red);
+  color: #fff;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 15px;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.submit-btn:hover {
+  background: #7a1212;
+}
+
+/* ============================================================
+   RESPONSIVE — TABLET (≤ 1024px)
+   ============================================================ */
+@media (max-width: 1024px) {
+  .hero-content h1 {
+    font-size: 34px;
+  }
+
+  .courses-preview-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .subjects-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .testimonials-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .blog-preview-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .contact-quick-container {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE — MOBILE (≤ 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+  .hero-slider {
+    height: 420px;
+  }
+
+  .hero-content h1 {
+    font-size: 26px;
+  }
+
+  .hero-content p {
+    font-size: 15px;
+  }
+
+  .hero-btn {
+    padding: 12px 26px;
+    font-size: 14px;
+  }
+
+  .stats-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .stat-box h2 {
+    font-size: 28px;
+  }
+
+  .main-title {
+    font-size: 24px;
+  }
+
+  .courses-preview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .subjects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .branches-preview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .blog-preview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .notes-promo-content h2 {
+    font-size: 24px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-quick-text h2 {
+    font-size: 24px;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE — SMALL MOBILE (≤ 480px)
+   ============================================================ */
+@media (max-width: 480px) {
+  .hero-slider {
+    height: 380px;
+  }
+
+  .hero-content h1 {
+    font-size: 22px;
+  }
+
+  .stats-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .stat-box h2 {
+    font-size: 24px;
+  }
+
+  .courses-preview-section,
+  .subjects-section,
+  .branches-section,
+  .testimonials-section,
+  .blog-preview-section,
+  .contact-quick-section {
+    padding: 50px 16px;
+  }
+}

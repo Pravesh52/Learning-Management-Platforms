@@ -1,41 +1,66 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 
-// Pages
+// Layout Components
+import Header from "./components/Header/Header";
+import Footer from "./components/Footer/Footer";
+import ProtectedRoute from "./components/ProtectedRoute";
+
+// Context
+import { CartProvider } from "./context/CartContext";
+
+// Public Pages
 import Home from "./pages/Home";
+import Courses from "./pages/Courses";
+import CourseDetail from "./pages/CourseDetail";
+import Branches from "./pages/Branches";
+import Notes from "./pages/Notes";
+import ProductDetail from "./pages/ProductDetail";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Blogs from "./pages/Blogs";
+import BlogDetail from "./pages/BlogDetail";
+import AboutUs from "./pages/AboutUs";
+import ContactUs from "./pages/ContactUs";
+
+// Auth Pages
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Pages from "./pages/Pages";
-import Courses from "./pages/Courses";
+
+// Dashboard Pages
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-
-// Components
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Contact from "./pages/Contact";
-// import Notification from "./pages/admin/Notification";
 
 function Layout() {
   const location = useLocation();
 
+  // Header/Footer hide on Dashboard and Admin pages (they have their own layout)
   const hideLayout =
-    location.pathname === "/dashboard" ||
-    location.pathname === "/admin";
+    location.pathname === "/dashboard" || location.pathname === "/admin";
 
   return (
     <>
-      {!hideLayout && <Navbar />}
+      {!hideLayout && <Header />}
 
       <Routes>
+        {/* ===== PUBLIC PAGES ===== */}
         <Route path="/" element={<Home />} />
-        <Route path="/pages" element={<Pages />} />
         <Route path="/courses" element={<Courses />} />
+        <Route path="/courses/:id" element={<CourseDetail />} />
+        <Route path="/branches" element={<Branches />} />
+        <Route path="/notes" element={<Notes />} />
+        <Route path="/notes/:id" element={<ProductDetail />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/blogs" element={<Blogs />} />
+        <Route path="/blogs/:id" element={<BlogDetail />} />
+        <Route path="/about-us" element={<AboutUs />} />
+        <Route path="/contact-us" element={<ContactUs />} />
+
+        {/* ===== AUTH PAGES ===== */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/contact" element={<Contact/>}/>
 
-        {/* ✅ USER DASHBOARD */}
+        {/* ===== STUDENT DASHBOARD (Protected) ===== */}
         <Route
           path="/dashboard"
           element={
@@ -45,20 +70,15 @@ function Layout() {
           }
         />
 
-        {/* ✅ ADMIN DASHBOARD */}
+        {/* ===== ADMIN DASHBOARD (Protected) ===== */}
         <Route
           path="/admin"
           element={
             <ProtectedRoute role="admin">
               <AdminDashboard />
             </ProtectedRoute>
-          } 
+          }
         />
-          <Route
-        path="/Notification"
-        element={<Notification />}
-      />
-   
       </Routes>
 
       {!hideLayout && <Footer />}
@@ -69,7 +89,9 @@ function Layout() {
 function App() {
   return (
     <Router>
-      <Layout />
+      <CartProvider>
+        <Layout />
+      </CartProvider>
     </Router>
   );
 }
