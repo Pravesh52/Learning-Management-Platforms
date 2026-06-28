@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import "../pages/../styles/AdminDashboard.css";
+import "../styles/AdminDashboard.css";
 import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const [courses, setCourses] = useState([]);
   const [users, setUsers] = useState([]);
   const [pdfs, setPdfs] = useState([]);
@@ -18,15 +20,14 @@ const AdminDashboard = () => {
   const [pdfTitle, setPdfTitle] = useState("");
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfCourse, setPdfCourse] = useState("");
-  // Ye line add karo baaki states ke saath
-const [pdfLoading, setPdfLoading] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
   const fileInputRef = useRef(null);
 
   // ===== ENROLLMENT DETAIL MODAL =====
   const [showEnrollModal, setShowEnrollModal] = useState(false);
   const [enrollDetail, setEnrollDetail] = useState(null);
 
-  // ===== RESULT MANAGEMENT STATES (NEW) =====
+  // ===== RESULT MANAGEMENT STATES =====
   const [showResultModal, setShowResultModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [studentResults, setStudentResults] = useState([]);
@@ -45,7 +46,6 @@ const [pdfLoading, setPdfLoading] = useState(false);
   const token = localStorage.getItem("token");
   const authHeaders = { Authorization: `Bearer ${token}` };
 
-  // ===== BUG 4 FIX: New course fields =====
   const [newCourse, setNewCourse] = useState({
     title: "", timing: "", price: "", status: "draft",
     batch: "", className: "", teacherName: "",
@@ -66,6 +66,7 @@ const [pdfLoading, setPdfLoading] = useState(false);
   useEffect(() => {
     if (activeTab === "notify") fetchNotifications();
     if (activeTab === "students") fetchEnrollments();
+    setSidebarOpen(false);
   }, [activeTab]);
 
   // ===== FETCH COURSES =====
@@ -76,7 +77,7 @@ const [pdfLoading, setPdfLoading] = useState(false);
     } catch (error) { console.log(error); }
   };
 
-  // ===== FETCH USERS =====
+  // ===== FETCH USERS/STUDENTS =====
   const fetchUsers = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/api/admin/students`, { headers: authHeaders });
@@ -84,17 +85,14 @@ const [pdfLoading, setPdfLoading] = useState(false);
     } catch (error) { console.log(error.response?.data || error.message); }
   };
 
-  // ===== FETCH PDFs =====
+  // ===== FETCH PDFS =====
   const fetchPDFs = async () => {
-  try {
-    const res = await axios.get(`${BASE_URL}/api/pdfs`, { 
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    setPdfs(res.data);
-  } catch (error) {
-    console.log("PDF fetch error:", error.response?.data || error.message);
-  }
-};
+    try {
+      const res = await axios.get(`${BASE_URL}/api/pdfs`, { headers: authHeaders });
+      setPdfs(res.data);
+    } catch (error) { console.log(error); }
+  };
+
   // ===== FETCH ENROLLMENTS =====
   const fetchEnrollments = async () => {
     try {
@@ -111,10 +109,10 @@ const [pdfLoading, setPdfLoading] = useState(false);
     } catch (error) { console.log(error); }
   };
 
-  // ===== CREATE COURSE (BUG 4 FIX) =====
+  // ===== CREATE COURSE =====
   const createCourse = async () => {
     if (!newCourse.title || !newCourse.timing || !newCourse.price) {
-      alert("Title, Timing aur Price required hain"); return;
+      alert("Title, Timing and Price are required"); return;
     }
     try {
       await axios.post(`${BASE_URL}/api/courses`, newCourse);
@@ -123,155 +121,55 @@ const [pdfLoading, setPdfLoading] = useState(false);
     } catch (error) { console.log(error.response?.data || error.message); }
   };
 
-  // ===== BUG 1 FIX: SEND TO UI (DB me save hoga, localStorage nahi) =====
+  // ===== SEND TO UI / REMOVE FROM UI =====
   const handleSendToUI = async (course) => {
     try {
       const res = await axios.put(`${BASE_URL}/api/courses/${course._id}/toggle-ui`, {}, { headers: authHeaders });
-      alert(res.data.message);
-      await fetchCourses(); // ✅ Fresh data DB se
+      await fetchCourses();
     } catch (error) {
       alert("Error: " + (error.response?.data?.message || error.message));
     }
   };
 
-  // ===== BUG 3 FIX: TOGGLE ACTIVE/DEACTIVE =====
+  // ===== TOGGLE ACTIVE/DEACTIVE =====
   const handleToggleStatus = async (userId, currentStatus) => {
-    const confirm = window.confirm(
-      currentStatus ? "Kya aap is student ko Deactivate karna chahte ho?" : "Kya aap is student ko Activate karna chahte ho?"
-    );
-    if (!confirm) return;
+    const confirmMsg = currentStatus
+      ? "Deactivate this student? They will not be able to login."
+      : "Activate this student? They will be able to login again.";
+    if (!window.confirm(confirmMsg)) return;
     try {
       const res = await axios.put(
         `${BASE_URL}/api/admin/users/${userId}/toggle-status`, {},
         { headers: authHeaders }
       );
-      alert(res.data.message);
       await fetchUsers();
     } catch (error) {
       alert("Error: " + (error.response?.data?.message || error.message));
     }
   };
 
-  // ===== VIEW ENROLLMENT DETAIL (Eye icon) =====
+  // ===== VIEW ENROLLMENT DETAIL =====
   const handleViewEnrollment = async (enrollmentId) => {
     try {
       const res = await axios.get(`${BASE_URL}/api/enrollments/detail/${enrollmentId}`, { headers: authHeaders });
       setEnrollDetail(res.data);
       setShowEnrollModal(true);
     } catch (error) {
-      alert("Form detail load nahi ho paya");
+      alert("Could not load enrollment form details");
     }
   };
 
-  // ===== UPLOAD PDF =====
-  const uploadPDF = async () => {
-  if (!pdfTitle || !pdfFile) {
-    alert("Title aur PDF file dono required hain");
-    return;
-  }
-  try {
-    setPdfLoading(true);
-    const formData = new FormData();
-    formData.append("title", pdfTitle);
-    formData.append("pdf", pdfFile);
-    if (pdfCourse) formData.append("course", pdfCourse);
-
-    await axios.post(`${BASE_URL}/api/pdfs/upload`, formData, {
-      headers: { 
-        Authorization: `Bearer ${token}` 
-        // Content-Type mat daalo — FormData khud set karta hai
-      },
-    });
-
-    alert("✅ PDF upload ho gaya!");
-    setPdfTitle("");
-    setPdfCourse("");
-    setPdfFile(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-    fetchPDFs();
-  } catch (error) {
-    alert("Upload failed: " + (error.response?.data?.message || error.message));
-  } finally {
-    setPdfLoading(false);
-  }
-};
-
-  // ===== SEND NOTIFICATION =====
-  const sendNotification = async () => {
-    if (!subject || !message) { alert("Please fill all fields"); return; }
-    try {
-      await axios.post(`${BASE_URL}/api/notifications/send`, { subject, message });
-      alert("✅ Notification Successfully Send Ho Gayi!");
-      setSubject(""); setMessage("");
-      fetchNotifications();
-    } catch (error) { alert("❌ Failed To Send Notification"); }
-  };
-
-  // ===== DELETE NOTIFICATION =====
-  const deleteNotification = async (id) => {
-    if (!window.confirm("Kya aap sure hain? Ye notification delete ho jaegi.")) return;
-    try {
-      await axios.delete(`${BASE_URL}/api/notifications/delete/${id}`);
-      setNotifications((prev) => prev.filter((n) => n._id !== id));
-      alert("🗑️ Notification Delete Ho Gayi");
-    } catch (error) { alert("❌ Delete Failed"); }
-  };
-
-  const formatDateTime = (isoString) => {
-    const date = new Date(isoString);
-    return `${date.toLocaleDateString("hi-IN", { day: "2-digit", month: "long", year: "numeric" })} | ${date.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true })}`;
-  };
-
-  // Delete Pdfs
-
-  const handleSendPdf = async (pdfId, title) => {
-  try {
-    await axios.put(`${BASE_URL}/api/pdfs/${pdfId}/send`, {}, { headers: authHeaders });
-    alert(`✅ "${title}" — All Students ko send ho gaya!`);
-    fetchPDFs();
-  } catch (error) {
-    alert("Error: " + (error.response?.data?.message || error.message));
-  }
-};
- 
-const handleRemovePdf = async (pdfId, title) => {
-  if (!window.confirm(`"${title}" students se remove karna chahte ho?`)) return;
-  try {
-    await axios.put(`${BASE_URL}/api/pdfs/${pdfId}/remove`, {}, { headers: authHeaders });
-    alert(`🗑️ "${title}" students se remove ho gaya!`);
-    fetchPDFs();
-  } catch (error) {
-    alert("Error: " + (error.response?.data?.message || error.message));
-  }
-};
- 
-const handleDeletePdf = async (pdfId, title) => {
-  if (!window.confirm(`"${title}" permanently delete karna chahte ho? Supabase se bhi delete hoga.`)) return;
-  try {
-    await axios.delete(`${BASE_URL}/api/pdfs/${pdfId}`, { headers: authHeaders });
-    alert(`🗑️ "${title}" delete ho gaya!`);
-    fetchPDFs();
-  } catch (error) {
-    alert("Error: " + (error.response?.data?.message || error.message));
-  }
-};
-
-  // ===== GET ENROLLMENT ID FOR A STUDENT =====
   const getEnrollmentId = (studentId) => {
     const e = enrollments.find(en => en.student?._id === studentId || en.student === studentId);
     return e ? e._id : null;
   };
 
-  // ===== RESULT MANAGEMENT FUNCTIONS (NEW) =====
+  // ===== RESULT MANAGEMENT FUNCTIONS =====
   const fetchStudentResults = async (studentId) => {
     try {
-      const res = await axios.get(`${BASE_URL}/api/results/student/${studentId}`, {
-        headers: authHeaders,
-      });
+      const res = await axios.get(`${BASE_URL}/api/results/student/${studentId}`, { headers: authHeaders });
       setStudentResults(res.data);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) { console.log(error); }
   };
 
   const openResultModal = (student) => {
@@ -284,32 +182,26 @@ const handleDeletePdf = async (pdfId, title) => {
 
   const resetResultForm = () => {
     setResultForm({
-      testType: "Marathon Test",
-      testName: "",
-      marksObtained: "",
-      totalMarks: "",
-      remarks: "",
-      date: new Date().toISOString().split("T")[0],
+      testType: "Marathon Test", testName: "", marksObtained: "",
+      totalMarks: "", remarks: "", date: new Date().toISOString().split("T")[0],
     });
     setEditingResultId(null);
   };
 
   const handleSaveResult = async (sendNow) => {
     if (!resultForm.testName || !resultForm.marksObtained || !resultForm.totalMarks) {
-      alert("Test Name, Marks Obtained aur Total Marks required hain");
+      alert("Test Name, Marks Obtained and Total Marks are required");
       return;
     }
     try {
       if (editingResultId) {
         await axios.put(`${BASE_URL}/api/results/${editingResultId}`, resultForm, { headers: authHeaders });
-        alert("✅ Result updated successfully!");
       } else {
         await axios.post(
           `${BASE_URL}/api/results`,
           { ...resultForm, studentId: selectedStudent._id, sendNow },
           { headers: authHeaders }
         );
-        alert(sendNow ? "✅ Result created & sent to student!" : "✅ Result saved as draft!");
       }
       resetResultForm();
       setShowResultForm(false);
@@ -333,20 +225,18 @@ const handleDeletePdf = async (pdfId, title) => {
   };
 
   const handleDeleteResult = async (resultId, testName) => {
-    if (!window.confirm(`"${testName}" result delete karna chahte ho?`)) return;
+    if (!window.confirm(`Delete result "${testName}"?`)) return;
     try {
       await axios.delete(`${BASE_URL}/api/results/${resultId}`, { headers: authHeaders });
-      alert("🗑️ Result deleted!");
       fetchStudentResults(selectedStudent._id);
     } catch (error) {
       alert("Error: " + (error.response?.data?.message || error.message));
     }
   };
 
-  const handleSendResult = async (resultId, testName) => {
+  const handleSendResult = async (resultId) => {
     try {
       await axios.put(`${BASE_URL}/api/results/${resultId}/send`, {}, { headers: authHeaders });
-      alert(`📤 "${testName}" student ko send ho gaya!`);
       fetchStudentResults(selectedStudent._id);
     } catch (error) {
       alert("Error: " + (error.response?.data?.message || error.message));
@@ -354,36 +244,132 @@ const handleDeletePdf = async (pdfId, title) => {
   };
 
   const handleUnsendResult = async (resultId, testName) => {
-    if (!window.confirm(`"${testName}" student ki dashboard se hide karna chahte ho?`)) return;
+    if (!window.confirm(`Hide "${testName}" from student's dashboard?`)) return;
     try {
       await axios.put(`${BASE_URL}/api/results/${resultId}/unsend`, {}, { headers: authHeaders });
-      alert(`🚫 "${testName}" student se hide ho gaya!`);
       fetchStudentResults(selectedStudent._id);
     } catch (error) {
       alert("Error: " + (error.response?.data?.message || error.message));
     }
   };
 
+  // ===== PDF MANAGEMENT =====
+  const uploadPDF = async () => {
+    if (!pdfTitle || !pdfFile) { alert("Please fill all fields"); return; }
+    try {
+      setPdfLoading(true);
+      const formData = new FormData();
+      formData.append("title", pdfTitle);
+      formData.append("pdf", pdfFile);
+      if (pdfCourse) formData.append("course", pdfCourse);
+      await axios.post(`${BASE_URL}/api/pdfs/upload`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setPdfTitle(""); setPdfCourse(""); setPdfFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      fetchPDFs();
+    } catch (error) {
+      alert("Upload failed: " + (error.response?.data?.message || error.message));
+    } finally {
+      setPdfLoading(false);
+    }
+  };
+
+  const handleSendPdf = async (pdfId) => {
+    try {
+      await axios.put(`${BASE_URL}/api/pdfs/${pdfId}/send`, {}, { headers: authHeaders });
+      fetchPDFs();
+    } catch (error) {
+      alert("Error: " + (error.response?.data?.message || error.message));
+    }
+  };
+
+  const handleRemovePdf = async (pdfId, title) => {
+    if (!window.confirm(`Remove "${title}" from students?`)) return;
+    try {
+      await axios.put(`${BASE_URL}/api/pdfs/${pdfId}/remove`, {}, { headers: authHeaders });
+      fetchPDFs();
+    } catch (error) {
+      alert("Error: " + (error.response?.data?.message || error.message));
+    }
+  };
+
+  const handleDeletePdf = async (pdfId, title) => {
+    if (!window.confirm(`Permanently delete "${title}"?`)) return;
+    try {
+      await axios.delete(`${BASE_URL}/api/pdfs/${pdfId}`, { headers: authHeaders });
+      fetchPDFs();
+    } catch (error) {
+      alert("Error: " + (error.response?.data?.message || error.message));
+    }
+  };
+
+  // ===== NOTIFICATIONS =====
+  const sendNotification = async () => {
+    if (!subject || !message) { alert("Please fill all fields"); return; }
+    try {
+      await axios.post(`${BASE_URL}/api/notifications/send`, { subject, message });
+      setSubject(""); setMessage("");
+      fetchNotifications();
+    } catch (error) { alert("Failed to send notification"); }
+  };
+
+  const deleteNotification = async (id) => {
+    if (!window.confirm("Delete this notification?")) return;
+    try {
+      await axios.delete(`${BASE_URL}/api/notifications/delete/${id}`);
+      setNotifications((prev) => prev.filter((n) => n._id !== id));
+    } catch (error) { alert("Delete failed"); }
+  };
+
+  const formatDateTime = (isoString) => {
+    const date = new Date(isoString);
+    return `${date.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })} • ${date.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true })}`;
+  };
+
+  const tabs = [
+    { id: "dashboard", label: "Dashboard", icon: "🏠" },
+    { id: "students", label: "All Students", icon: "👥" },
+    { id: "courses", label: "Courses", icon: "📚" },
+    { id: "pdf", label: "Study Material", icon: "📄" },
+    { id: "notify", label: "Notifications", icon: "📢" },
+  ];
+
   return (
     <div className="admin-container">
+      {/* MOBILE TOP BAR */}
+      <div className="admin-mobile-topbar">
+        <button className="admin-hamburger" onClick={() => setSidebarOpen(true)}>☰</button>
+        <span className="admin-mobile-logo">Climax Academy — Admin</span>
+      </div>
+
+      {sidebarOpen && (
+        <div className="admin-sidebar-overlay" onClick={() => setSidebarOpen(false)}></div>
+      )}
+
       {/* SIDEBAR */}
-      <div className="sidebar">
-        <h2>Climax Academy</h2>
+      <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+        <div className="sidebar-header">
+          <h2>Climax Academy</h2>
+          <button className="sidebar-close" onClick={() => setSidebarOpen(false)}>✖</button>
+        </div>
         <ul>
-          <li onClick={() => setActiveTab("dashboard")}>Dashboard</li>
-          <li onClick={() => { setActiveTab("students"); fetchEnrollments(); }}>All Students</li>
-          <li onClick={() => setActiveTab("courses")}>Create Courses</li>
-          <li onClick={() => setActiveTab("pdf")}>Upload PDF</li>
-          <li onClick={() => setActiveTab("quiz")}>Create Quiz</li>
-          <li onClick={() => setActiveTab("live")}>Live Classes</li>
-          <li onClick={() => setActiveTab("notify")}>Send Notification</li>
+          {tabs.map((tab) => (
+            <li
+              key={tab.id}
+              className={activeTab === tab.id ? "active" : ""}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <span className="tab-icon">{tab.icon}</span> {tab.label}
+            </li>
+          ))}
         </ul>
       </div>
 
       {/* MAIN */}
       <div className="main">
-        {/* TOP BAR */}
-        <div className="top-bar">
+        <div className="top-bar desktop-only">
+          <h1>{tabs.find((t) => t.id === activeTab)?.label}</h1>
           <div className="admin-info">
             <span>{admin?.name || "Admin"}</span>
             <button onClick={handleLogout} className="logout-btn">Logout</button>
@@ -393,20 +379,36 @@ const handleDeletePdf = async (pdfId, title) => {
         {/* ===== DASHBOARD ===== */}
         {activeTab === "dashboard" && (
           <>
-            <h2 className="dashboard-title">Dashboard Overview</h2>
+            <h2 className="dashboard-title mobile-only-title">Dashboard Overview</h2>
             <div className="dashboard-cards">
-              <div className="dash-card"><h4>Total Students</h4><p>{users.length}</p></div>
-              <div className="dash-card"><h4>Total Courses</h4><p>{courses.length}</p></div>
-              <div className="dash-card"><h4>Total PDFs</h4><p>{pdfs.length}</p></div>
-              <div className="dash-card"><h4>Live Classes</h4><p>2</p></div>
+              <div className="dash-card">
+                <div className="dash-card-icon">👥</div>
+                <h4>Total Students</h4>
+                <p>{users.length}</p>
+              </div>
+              <div className="dash-card">
+                <div className="dash-card-icon">📚</div>
+                <h4>Total Courses</h4>
+                <p>{courses.length}</p>
+              </div>
+              <div className="dash-card">
+                <div className="dash-card-icon">📄</div>
+                <h4>Total PDFs</h4>
+                <p>{pdfs.length}</p>
+              </div>
+              <div className="dash-card">
+                <div className="dash-card-icon">✅</div>
+                <h4>Enrolled Students</h4>
+                <p>{users.filter((u) => u.isEnrolled).length}</p>
+              </div>
             </div>
           </>
         )}
 
-        {/* ===== STUDENTS (BUG 2 + BUG 3 FIX) ===== */}
+        {/* ===== STUDENTS ===== */}
         {activeTab === "students" && (
           <>
-            <h2>All Students</h2>
+            <h2 className="mobile-only-title">All Students</h2>
             <div className="student-table-wrapper">
               {users.length > 0 ? (
                 <table className="student-table">
@@ -419,7 +421,7 @@ const handleDeletePdf = async (pdfId, title) => {
                       <th>Mobile</th>
                       <th>Enrollment</th>
                       <th>Course Enrolled</th>
-                      <th>Enrollment Form</th>
+                      <th>Form</th>
                       <th>Result</th>
                       <th>Status</th>
                     </tr>
@@ -432,65 +434,32 @@ const handleDeletePdf = async (pdfId, title) => {
                           <td>{index + 1}</td>
                           <td>
                             {u.enrollmentNumber ? (
-                              <span style={{
-                                background: "rgba(167,139,250,0.15)", color: "#a78bfa",
-                                border: "1px solid #a78bfa", borderRadius: "6px",
-                                padding: "3px 10px", fontSize: "12px", fontWeight: "700",
-                                whiteSpace: "nowrap"
-                              }}>
-                                {u.enrollmentNumber}
-                              </span>
+                              <span className="pill-badge purple">{u.enrollmentNumber}</span>
                             ) : "—"}
                           </td>
                           <td>{u.name}</td>
-                          <td>{u.email}</td>
+                          <td className="ellipsis-cell">{u.email}</td>
                           <td>{u.mobilenumber || "N/A"}</td>
-                          {/* ✅ Enrolled / Not Enrolled */}
                           <td>
-                            <span style={{
-                              display: "inline-block",
-                              padding: "4px 12px",
-                              borderRadius: "20px",
-                              fontSize: "12px",
-                              fontWeight: "600",
-                              background: u.isEnrolled ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)",
-                              color: u.isEnrolled ? "#22c55e" : "#ef4444",
-                              border: `1px solid ${u.isEnrolled ? "#22c55e" : "#ef4444"}`,
-                              whiteSpace: "nowrap",
-                            }}>
+                            <span className={`pill-badge ${u.isEnrolled ? "green" : "red"}`}>
                               {u.isEnrolled ? "✅ Enrolled" : "❌ Not Enrolled"}
                             </span>
                           </td>
                           <td>{u.enrolledCourseName || "—"}</td>
-                          {/* Eye icon for enrollment form */}
                           <td>
                             {enrollId ? (
-                              <button
-                                onClick={() => handleViewEnrollment(enrollId)}
-                                title="Enrollment Form Dekho"
-                                style={{ background: "none", border: "none", cursor: "pointer", fontSize: "20px" }}
-                              >
+                              <button onClick={() => handleViewEnrollment(enrollId)} className="icon-btn" title="View Enrollment Form">
                                 👁️
                               </button>
                             ) : "—"}
                           </td>
-                          {/* ✅ Result Manage Button */}
                           <td>
                             {u.isEnrolled ? (
-                              <button
-                                onClick={() => openResultModal(u)}
-                                style={{
-                                  background: "rgba(96,165,250,0.15)", color: "#60a5fa",
-                                  border: "1px solid #60a5fa", borderRadius: "6px",
-                                  padding: "5px 12px", cursor: "pointer", fontSize: "12px", fontWeight: "600",
-                                  whiteSpace: "nowrap"
-                                }}
-                              >
+                              <button onClick={() => openResultModal(u)} className="manage-btn">
                                 📊 Manage
                               </button>
                             ) : "—"}
                           </td>
-                          {/* ✅ Active / Deactive */}
                           <td>
                             <button
                               onClick={() => handleToggleStatus(u._id, u.isActive)}
@@ -505,233 +474,146 @@ const handleDeletePdf = async (pdfId, title) => {
                   </tbody>
                 </table>
               ) : (
-                <p>No students found</p>
+                <p className="empty-text">No students found</p>
               )}
             </div>
           </>
         )}
 
-        {/* ===== COURSES (BUG 1 + BUG 4 FIX) ===== */}
+        {/* ===== COURSES ===== */}
         {activeTab === "courses" && (
           <>
-            <h2>Create Courses</h2>
-            <div className="form">
-              <input type="text" placeholder="Course Name" value={newCourse.title}
-                onChange={(e) => setNewCourse({ ...newCourse, title: e.target.value })} />
-              <input type="text" placeholder="Timing (e.g. 9:00 AM - 11:00 AM)" value={newCourse.timing}
-                onChange={(e) => setNewCourse({ ...newCourse, timing: e.target.value })} />
-              <input type="number" placeholder="Price" value={newCourse.price}
-                onChange={(e) => setNewCourse({ ...newCourse, price: e.target.value })} />
-              {/* ✅ BUG 4 FIX: New fields */}
-              <input type="text" placeholder="Batch (e.g. 2024-25)" value={newCourse.batch}
-                onChange={(e) => setNewCourse({ ...newCourse, batch: e.target.value })} />
-              <input type="text" placeholder="Class (e.g. 11th / 12th)" value={newCourse.className}
-                onChange={(e) => setNewCourse({ ...newCourse, className: e.target.value })} />
-              <input type="text" placeholder="Teacher Name" value={newCourse.teacherName}
-                onChange={(e) => setNewCourse({ ...newCourse, teacherName: e.target.value })} />
-              <select value={newCourse.status}
-                onChange={(e) => setNewCourse({ ...newCourse, status: e.target.value })}>
-                <option value="draft">Draft</option>
-                <option value="published">Published</option>
-              </select>
-              <button onClick={createCourse}>Create Course</button>
+            <h2 className="mobile-only-title">Create Courses</h2>
+            <div className="form-card">
+              <div className="form-grid">
+                <input type="text" placeholder="Course Name" value={newCourse.title}
+                  onChange={(e) => setNewCourse({ ...newCourse, title: e.target.value })} />
+                <input type="text" placeholder="Timing (e.g. 9:00 AM - 11:00 AM)" value={newCourse.timing}
+                  onChange={(e) => setNewCourse({ ...newCourse, timing: e.target.value })} />
+                <input type="number" placeholder="Price" value={newCourse.price}
+                  onChange={(e) => setNewCourse({ ...newCourse, price: e.target.value })} />
+                <input type="text" placeholder="Batch (e.g. 2026-27)" value={newCourse.batch}
+                  onChange={(e) => setNewCourse({ ...newCourse, batch: e.target.value })} />
+                <input type="text" placeholder="Class (e.g. 11th / 12th)" value={newCourse.className}
+                  onChange={(e) => setNewCourse({ ...newCourse, className: e.target.value })} />
+                <input type="text" placeholder="Teacher Name" value={newCourse.teacherName}
+                  onChange={(e) => setNewCourse({ ...newCourse, teacherName: e.target.value })} />
+                <select value={newCourse.status}
+                  onChange={(e) => setNewCourse({ ...newCourse, status: e.target.value })}>
+                  <option value="draft">Draft</option>
+                  <option value="published">Published</option>
+                </select>
+              </div>
+              <button className="primary-btn" onClick={createCourse}>+ Create Course</button>
             </div>
 
             <div className="course-list">
               {courses.length > 0 ? (
                 courses.map((c) => (
-                  <div className="course-card" key={c._id}>
+                  <div className="course-card-admin" key={c._id}>
                     <h4>{c.title}</h4>
                     <p className="timing">⏰ {c.timing}</p>
                     <p className="price">₹ {c.price}</p>
-                    {/* ✅ BUG 4: Show new fields */}
-                    {c.batch && <p>📅 Batch: {c.batch}</p>}
-                    {c.className && <p>🎓 Class: {c.className}</p>}
-                    {c.teacherName && <p>👨‍🏫 Teacher: {c.teacherName}</p>}
-                    <p className="status">Status: {c.status}</p>
+                    {c.batch && <p className="extra-info purple">📅 Batch: {c.batch}</p>}
+                    {c.className && <p className="extra-info blue">🎓 Class: {c.className}</p>}
+                    {c.teacherName && <p className="extra-info green">👨‍🏫 Teacher: {c.teacherName}</p>}
+                    <p className="status-tag">Status: {c.status}</p>
                     {c.status === "published" ? (
                       <button
                         onClick={() => handleSendToUI(c)}
-                        style={{ background: c.sentToUI ? "#dc2626" : "#16a34a" }}
+                        className={c.sentToUI ? "danger-btn full" : "success-btn full"}
                       >
                         {c.sentToUI ? "✓ Sent (Remove)" : "Send to UI"}
                       </button>
                     ) : (
-                      <button disabled>Draft</button>
+                      <button className="disabled-btn full" disabled>Draft</button>
                     )}
                   </div>
                 ))
               ) : (
-                <p>No Courses Found</p>
+                <p className="empty-text">No Courses Found</p>
               )}
             </div>
           </>
         )}
 
-        {/* ===== PDF ===== */}
+        {/* ===== PDF / STUDY MATERIAL ===== */}
         {activeTab === "pdf" && (
-  <>
-    <h2>📄 Upload PDF / Notes</h2>
- 
-    {/* UPLOAD FORM */}
-    <div className="form">
-      <input
-        type="text"
-        placeholder="PDF Title (e.g. Physics Chapter 1 Notes)"
-        value={pdfTitle}
-        onChange={(e) => setPdfTitle(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Course Name (Optional)"
-        value={pdfCourse}
-        onChange={(e) => setPdfCourse(e.target.value)}
-      />
-      <input
-        type="file"
-        accept=".pdf"
-        ref={fileInputRef}
-        onChange={(e) => setPdfFile(e.target.files[0])}
-      />
-      <button onClick={uploadPDF} disabled={pdfLoading}>
-        {pdfLoading ? "⏳ Uploading..." : "⬆️ Upload PDF"}
-      </button>
-    </div>
- 
-    {/* PDF CARDS LIST */}
-    <div className="pdf-list" style={{ marginTop: "30px" }}>
-      <h3 style={{ marginBottom: "16px", color: "#a78bfa" }}>
-        📋 All Uploaded PDFs ({pdfs.length})
-      </h3>
- 
-      {pdfs.length === 0 ? (
-        <p style={{ color: "#888" }}>Abhi tak koi PDF upload nahi hua</p>
-      ) : (
-        pdfs.map((pdf) => (
-          <div
-            key={pdf._id}
-            style={{
-              background: "#1e1e2e",
-              border: `1px solid ${pdf.sentToStudents ? "#22c55e" : "#333"}`,
-              borderRadius: "12px",
-              padding: "18px 20px",
-              marginBottom: "14px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexWrap: "wrap",
-              gap: "12px",
-            }}
-          >
-            {/* LEFT: PDF INFO */}
-            <div style={{ flex: 1 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
-                <span style={{ fontSize: "24px" }}>📄</span>
-                <h4 style={{ margin: 0, color: "#fff", fontSize: "15px" }}>{pdf.title}</h4>
-                {pdf.sentToStudents && (
-                  <span style={{
-                    background: "rgba(34,197,94,0.15)", color: "#22c55e",
-                    border: "1px solid #22c55e", borderRadius: "20px",
-                    padding: "2px 10px", fontSize: "11px", fontWeight: "600"
-                  }}>
-                    ✅ Sent to Students
-                  </span>
-                )}
+          <>
+            <h2 className="mobile-only-title">Upload Study Material</h2>
+            <div className="form-card">
+              <div className="form-grid">
+                <input type="text" placeholder="PDF Title" value={pdfTitle}
+                  onChange={(e) => setPdfTitle(e.target.value)} />
+                <input type="text" placeholder="Course Name (Optional)" value={pdfCourse}
+                  onChange={(e) => setPdfCourse(e.target.value)} />
+                <input type="file" accept=".pdf" ref={fileInputRef}
+                  onChange={(e) => setPdfFile(e.target.files[0])} />
               </div>
-              <p style={{ margin: "0 0 4px", color: "#888", fontSize: "13px" }}>
-                📚 Course: {pdf.course || "General"}
-              </p>
-              <p style={{ margin: 0, color: "#666", fontSize: "12px" }}>
-                🕐 Uploaded: {new Date(pdf.createdAt).toLocaleDateString("en-IN", {
-                  day: "2-digit", month: "short", year: "numeric"
-                })}{", "}
-                {new Date(pdf.createdAt).toLocaleTimeString("en-IN", {
-                  hour: "2-digit", minute: "2-digit", hour12: true
-                })}
-              </p>
-            </div>
- 
-            {/* RIGHT: ACTION BUTTONS */}
-            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-              {/* View PDF */}
-              <a href={pdf.pdf} target="_blank" rel="noreferrer">
-                <button style={{
-                  background: "#2563eb", color: "#fff", border: "none",
-                  borderRadius: "6px", padding: "7px 14px", cursor: "pointer", fontSize: "13px"
-                }}>
-                  👁️ View
-                </button>
-              </a>
- 
-              {/* Send / Remove toggle */}
-              {pdf.sentToStudents ? (
-                <button
-                  onClick={() => handleRemovePdf(pdf._id, pdf.title)}
-                  style={{
-                    background: "rgba(239,68,68,0.15)", color: "#ef4444",
-                    border: "1px solid #ef4444", borderRadius: "6px",
-                    padding: "7px 14px", cursor: "pointer", fontSize: "13px"
-                  }}
-                >
-                  🚫 Remove
-                </button>
-              ) : (
-                <button
-                  onClick={() => handleSendPdf(pdf._id, pdf.title)}
-                  style={{
-                    background: "rgba(34,197,94,0.15)", color: "#22c55e",
-                    border: "1px solid #22c55e", borderRadius: "6px",
-                    padding: "7px 14px", cursor: "pointer", fontSize: "13px"
-                  }}
-                >
-                  📤 Send to Students
-                </button>
-              )}
- 
-              {/* Delete */}
-              <button
-                onClick={() => handleDeletePdf(pdf._id, pdf.title)}
-                style={{
-                  background: "rgba(239,68,68,0.15)", color: "#ef4444",
-                  border: "1px solid #ef4444", borderRadius: "6px",
-                  padding: "7px 14px", cursor: "pointer", fontSize: "13px"
-                }}
-              >
-                🗑️ Delete
+              <button className="primary-btn" onClick={uploadPDF} disabled={pdfLoading}>
+                {pdfLoading ? "Uploading..." : "⬆️ Upload PDF"}
               </button>
             </div>
-          </div>
-        ))
-      )}
-    </div>
-  </>
-)}
+
+            <div className="pdf-admin-list">
+              {pdfs.length === 0 ? (
+                <p className="empty-text">No PDFs uploaded yet</p>
+              ) : (
+                pdfs.map((pdf) => (
+                  <div className={`pdf-admin-card ${pdf.sentToStudents ? "sent" : ""}`} key={pdf._id}>
+                    <div className="pdf-admin-info">
+                      <div className="pdf-admin-title-row">
+                        <span className="pdf-admin-icon">📄</span>
+                        <h4>{pdf.title}</h4>
+                        {pdf.sentToStudents && <span className="pill-badge green small">✅ Sent</span>}
+                      </div>
+                      <p className="pdf-admin-course">📚 Course: {pdf.course || "General"}</p>
+                      <p className="pdf-admin-date">
+                        🕐 {pdf.createdAt
+                          ? `${new Date(pdf.createdAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })} • ${new Date(pdf.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true })}`
+                          : "—"}
+                      </p>
+                    </div>
+                    <div className="pdf-admin-actions">
+                      <a href={pdf.pdf} target="_blank" rel="noreferrer" className="action-btn blue">👁️ View</a>
+                      {pdf.sentToStudents ? (
+                        <button onClick={() => handleRemovePdf(pdf._id, pdf.title)} className="action-btn red">🚫 Remove</button>
+                      ) : (
+                        <button onClick={() => handleSendPdf(pdf._id)} className="action-btn green">📤 Send</button>
+                      )}
+                      <button onClick={() => handleDeletePdf(pdf._id, pdf.title)} className="action-btn red">🗑️ Delete</button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        )}
+
         {/* ===== NOTIFICATIONS ===== */}
         {activeTab === "notify" && (
           <>
-            <h2>📢 Send Notification to All Students</h2>
-            <div className="notification">
+            <h2 className="mobile-only-title">Send Notification to All Students</h2>
+            <div className="form-card">
               <input type="text" placeholder="Subject (e.g. Exam Date, Holiday Notice)"
-                value={subject} onChange={(e) => setSubject(e.target.value)} />
-              <textarea placeholder="Message likhein..." value={message}
-                onChange={(e) => setMessage(e.target.value)} rows={4} />
-              <button onClick={sendNotification}>📤 Send to All Students</button>
+                value={subject} onChange={(e) => setSubject(e.target.value)} className="full-width-input" />
+              <textarea placeholder="Write your message here... You can use line breaks for paragraphs."
+                value={message} onChange={(e) => setMessage(e.target.value)} rows={5} className="full-width-textarea" />
+              <button className="primary-btn" onClick={sendNotification}>📤 Send to All Students</button>
             </div>
 
-            <div style={{ marginTop: "30px" }}>
-              <h3>📋 All Messages ({notifications.length})</h3>
+            <div className="notifications-section">
+              <h3>All Messages ({notifications.length})</h3>
               {notifications.length === 0 ? (
-                <p style={{ color: "#888", marginTop: "10px" }}>Abhi tak koi notification send nahi hui...</p>
+                <p className="empty-text">No notifications sent yet...</p>
               ) : (
                 <div className="notification-list">
                   {notifications.map((notif) => (
-                    <div key={notif._id} className="notification-card"
-                      style={{ background: "#1e1e2e", border: "1px solid #333", borderRadius: "10px", padding: "16px 20px", marginBottom: "14px", position: "relative" }}>
-                      <h4 style={{ color: "#a78bfa", margin: "0 0 6px 0" }}>📌 {notif.subject}</h4>
-                      <p style={{ color: "#ccc", margin: "0 0 10px 0", lineHeight: "1.5", fontSize: "14px" }}>{notif.message}</p>
-                      <p style={{ color: "#666", fontSize: "12px", margin: "0" }}>🕐 {formatDateTime(notif.createdAt)}</p>
-                      <button onClick={() => deleteNotification(notif._id)}
-                        style={{ position: "absolute", top: "14px", right: "14px", background: "#dc2626", color: "white", border: "none", borderRadius: "6px", padding: "5px 12px", cursor: "pointer" }}>
+                    <div key={notif._id} className="notification-card">
+                      <h4>📌 {notif.subject}</h4>
+                      <p className="notification-message">{notif.message}</p>
+                      <p className="notification-time">🕐 {formatDateTime(notif.createdAt)}</p>
+                      <button onClick={() => deleteNotification(notif._id)} className="delete-notif-btn">
                         🗑️ Delete
                       </button>
                     </div>
@@ -743,20 +625,14 @@ const handleDeletePdf = async (pdfId, title) => {
         )}
       </div>
 
-      {/* ===== ENROLLMENT DETAIL MODAL (Eye icon) ===== */}
+      {/* ===== ENROLLMENT DETAIL MODAL ===== */}
       {showEnrollModal && enrollDetail && (
-        <div style={{
-          position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
-          background: "rgba(0,0,0,0.7)", zIndex: 1000, overflowY: "auto", display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "40px 20px"
-        }}>
-          <div style={{ background: "#1e1e2e", borderRadius: "12px", padding: "30px", maxWidth: "700px", width: "100%", color: "#fff", position: "relative" }}>
-            <button onClick={() => setShowEnrollModal(false)}
-              style={{ position: "absolute", top: "15px", right: "15px", background: "#dc2626", color: "white", border: "none", borderRadius: "6px", padding: "6px 14px", cursor: "pointer", fontSize: "14px" }}>
-              ✖ Close
-            </button>
-            <h2 style={{ color: "#a78bfa", marginBottom: "20px" }}>📋 Enrollment Form Details</h2>
+        <div className="admin-modal-overlay">
+          <div className="admin-modal">
+            <button onClick={() => setShowEnrollModal(false)} className="admin-modal-close">✖ Close</button>
+            <h2 className="admin-modal-title">📋 Enrollment Form Details</h2>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+            <div className="admin-modal-grid">
               {[
                 ["Course", enrollDetail.courseName],
                 ["Student Name", enrollDetail.studentName],
@@ -779,235 +655,127 @@ const handleDeletePdf = async (pdfId, title) => {
                 ["Previous %", enrollDetail.prevPercentage],
                 ["Fees Mode", enrollDetail.feesMode],
                 ["Batch", enrollDetail.batch || "N/A"],
-                ["Enrolled On", new Date(enrollDetail.enrolledAt).toLocaleDateString("hi-IN")],
+                ["Enrolled On", new Date(enrollDetail.enrolledAt).toLocaleDateString("en-IN")],
               ].map(([label, value]) => (
-                <div key={label} style={{ background: "#2a2a3e", borderRadius: "8px", padding: "10px 14px" }}>
-                  <p style={{ color: "#888", fontSize: "12px", margin: "0 0 4px" }}>{label}</p>
-                  <p style={{ color: "#fff", fontSize: "14px", margin: "0", fontWeight: "500" }}>{value || "—"}</p>
+                <div className="admin-modal-field" key={label}>
+                  <p className="field-label">{label}</p>
+                  <p className="field-value">{value || "—"}</p>
                 </div>
               ))}
             </div>
 
             {enrollDetail.photo && (
-              <div style={{ marginTop: "20px", textAlign: "center" }}>
-                <p style={{ color: "#888", marginBottom: "8px" }}>Passport Photo</p>
-                <img
-                  src={`${BASE_URL}/upload/photos/${enrollDetail.photo}`}
-                  alt="Student"
-                  style={{ width: "120px", height: "140px", objectFit: "cover", borderRadius: "8px", border: "2px solid #a78bfa" }}
-                />
+              <div className="admin-modal-photo">
+                <p>Passport Photo</p>
+                <img src={`${BASE_URL}/upload/photos/${enrollDetail.photo}`} alt="Student" />
               </div>
             )}
           </div>
         </div>
       )}
+
       {/* ===== RESULT MANAGEMENT MODAL ===== */}
       {showResultModal && selectedStudent && (
-        <div style={{
-          position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
-          background: "rgba(0,0,0,0.8)", zIndex: 1000, overflowY: "auto",
-          display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "30px 15px"
-        }}>
-          <div style={{
-            background: "#1e1e2e", borderRadius: "14px", padding: "26px",
-            maxWidth: "700px", width: "100%", color: "#fff", position: "relative"
-          }}>
+        <div className="admin-modal-overlay">
+          <div className="admin-modal">
             <button
               onClick={() => { setShowResultModal(false); setShowResultForm(false); resetResultForm(); }}
-              style={{
-                position: "absolute", top: "15px", right: "15px",
-                background: "#dc2626", color: "#fff", border: "none",
-                borderRadius: "6px", padding: "6px 14px", cursor: "pointer"
-              }}
+              className="admin-modal-close"
             >
-              ✖
+              ✖ Close
             </button>
 
-            <h2 style={{ color: "#a78bfa", marginBottom: "4px" }}>📊 Results</h2>
-            <p style={{ color: "#888", marginBottom: "4px" }}>
-              Student: <strong style={{ color: "#fff" }}>{selectedStudent.name}</strong>
+            <h2 className="admin-modal-title">📊 Results</h2>
+            <p className="admin-modal-subtext">
+              Student: <strong>{selectedStudent.name}</strong>
             </p>
-            <p style={{ color: "#888", marginBottom: "20px" }}>
-              Enrollment No: <strong style={{ color: "#a78bfa" }}>{selectedStudent.enrollmentNumber || "N/A"}</strong>
-              {" | "}Course: <strong style={{ color: "#60a5fa" }}>{selectedStudent.enrolledCourseName || "—"}</strong>
+            <p className="admin-modal-subtext">
+              Enrollment No: <strong className="purple-text">{selectedStudent.enrollmentNumber || "N/A"}</strong>
+              {" | "}Course: <strong className="blue-text">{selectedStudent.enrolledCourseName || "—"}</strong>
             </p>
 
             {!showResultForm && (
-              <button
-                onClick={() => { resetResultForm(); setShowResultForm(true); }}
-                style={{
-                  background: "#6c63ff", color: "#fff", border: "none",
-                  borderRadius: "8px", padding: "10px 20px", cursor: "pointer",
-                  fontWeight: "600", marginBottom: "20px"
-                }}
-              >
+              <button onClick={() => { resetResultForm(); setShowResultForm(true); }} className="primary-btn" style={{ marginBottom: "20px" }}>
                 + Add New Result
               </button>
             )}
 
             {showResultForm && (
-              <div style={{ background: "#2a2a3e", borderRadius: "10px", padding: "20px", marginBottom: "20px" }}>
-                <h4 style={{ color: "#a78bfa", marginBottom: "14px" }}>
-                  {editingResultId ? "✏️ Edit Result" : "➕ Add New Result"}
-                </h4>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-                  <div>
-                    <label style={{ fontSize: "12px", color: "#888" }}>Test Type *</label>
-                    <select
-                      value={resultForm.testType}
-                      onChange={(e) => setResultForm({ ...resultForm, testType: e.target.value })}
-                      style={resultInputStyle}
-                    >
+              <div className="result-form-card">
+                <h4>{editingResultId ? "✏️ Edit Result" : "➕ Add New Result"}</h4>
+                <div className="result-form-grid">
+                  <div className="result-field">
+                    <label>Test Type *</label>
+                    <select value={resultForm.testType} onChange={(e) => setResultForm({ ...resultForm, testType: e.target.value })}>
                       <option>Marathon Test</option>
                       <option>Weekly Test</option>
                       <option>Quiz Test</option>
                     </select>
                   </div>
-                  <div>
-                    <label style={{ fontSize: "12px", color: "#888" }}>Test Name *</label>
-                    <input
-                      value={resultForm.testName}
-                      onChange={(e) => setResultForm({ ...resultForm, testName: e.target.value })}
-                      placeholder="e.g. Marathon Test #1"
-                      style={resultInputStyle}
-                    />
+                  <div className="result-field">
+                    <label>Test Name *</label>
+                    <input value={resultForm.testName} onChange={(e) => setResultForm({ ...resultForm, testName: e.target.value })} placeholder="e.g. Marathon Test #1" />
                   </div>
-                  <div>
-                    <label style={{ fontSize: "12px", color: "#888" }}>Marks Obtained *</label>
-                    <input
-                      type="number"
-                      value={resultForm.marksObtained}
-                      onChange={(e) => setResultForm({ ...resultForm, marksObtained: e.target.value })}
-                      placeholder="e.g. 85"
-                      style={resultInputStyle}
-                    />
+                  <div className="result-field">
+                    <label>Marks Obtained *</label>
+                    <input type="number" value={resultForm.marksObtained} onChange={(e) => setResultForm({ ...resultForm, marksObtained: e.target.value })} placeholder="85" />
                   </div>
-                  <div>
-                    <label style={{ fontSize: "12px", color: "#888" }}>Total Marks *</label>
-                    <input
-                      type="number"
-                      value={resultForm.totalMarks}
-                      onChange={(e) => setResultForm({ ...resultForm, totalMarks: e.target.value })}
-                      placeholder="e.g. 100"
-                      style={resultInputStyle}
-                    />
+                  <div className="result-field">
+                    <label>Total Marks *</label>
+                    <input type="number" value={resultForm.totalMarks} onChange={(e) => setResultForm({ ...resultForm, totalMarks: e.target.value })} placeholder="100" />
                   </div>
-                  <div>
-                    <label style={{ fontSize: "12px", color: "#888" }}>Date</label>
-                    <input
-                      type="date"
-                      value={resultForm.date}
-                      onChange={(e) => setResultForm({ ...resultForm, date: e.target.value })}
-                      style={resultInputStyle}
-                    />
+                  <div className="result-field">
+                    <label>Date</label>
+                    <input type="date" value={resultForm.date} onChange={(e) => setResultForm({ ...resultForm, date: e.target.value })} />
                   </div>
-                  <div style={{ gridColumn: "1 / -1" }}>
-                    <label style={{ fontSize: "12px", color: "#888" }}>Remarks (Optional)</label>
-                    <input
-                      value={resultForm.remarks}
-                      onChange={(e) => setResultForm({ ...resultForm, remarks: e.target.value })}
-                      placeholder="e.g. Excellent performance!"
-                      style={resultInputStyle}
-                    />
+                  <div className="result-field full-width">
+                    <label>Remarks (Optional)</label>
+                    <input value={resultForm.remarks} onChange={(e) => setResultForm({ ...resultForm, remarks: e.target.value })} placeholder="Excellent performance!" />
                   </div>
                 </div>
 
-                <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
-                  <button
-                    onClick={() => { setShowResultForm(false); resetResultForm(); }}
-                    style={{
-                      background: "#374151", color: "#fff", border: "none",
-                      borderRadius: "8px", padding: "10px 18px", cursor: "pointer"
-                    }}
-                  >
-                    Cancel
-                  </button>
+                <div className="result-form-actions">
+                  <button onClick={() => { setShowResultForm(false); resetResultForm(); }} className="cancel-btn">Cancel</button>
                   {!editingResultId && (
-                    <button
-                      onClick={() => handleSaveResult(false)}
-                      style={{
-                        background: "#374151", color: "#fff", border: "1px solid #555",
-                        borderRadius: "8px", padding: "10px 18px", cursor: "pointer"
-                      }}
-                    >
-                      💾 Save Draft
-                    </button>
+                    <button onClick={() => handleSaveResult(false)} className="draft-btn">💾 Save Draft</button>
                   )}
-                  <button
-                    onClick={() => handleSaveResult(true)}
-                    style={{
-                      background: "#22c55e", color: "#fff", border: "none",
-                      borderRadius: "8px", padding: "10px 18px", cursor: "pointer",
-                      fontWeight: "600", flex: 1
-                    }}
-                  >
+                  <button onClick={() => handleSaveResult(true)} className="success-btn">
                     {editingResultId ? "✅ Update Result" : "📤 Save & Send"}
                   </button>
                 </div>
               </div>
             )}
 
-            <h4 style={{ color: "#888", marginBottom: "10px", fontSize: "14px" }}>
-              📋 Results History ({studentResults.length})
-            </h4>
+            <h4 className="results-history-title">📋 Results History ({studentResults.length})</h4>
 
             {studentResults.length === 0 ? (
-              <p style={{ color: "#666" }}>Abhi tak koi result add nahi hua</p>
+              <p className="empty-text">No results added yet</p>
             ) : (
               studentResults.map((r) => (
-                <div
-                  key={r._id}
-                  style={{
-                    background: "#252538", borderRadius: "10px", padding: "14px 18px",
-                    marginBottom: "10px", border: `1px solid ${r.sentToStudent ? "#22c55e" : "#444"}`
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "10px" }}>
+                <div className={`result-history-card ${r.sentToStudent ? "sent" : ""}`} key={r._id}>
+                  <div className="result-history-top">
                     <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px", flexWrap: "wrap" }}>
-                        <span style={{
-                          fontSize: "11px", background: "#374151", padding: "2px 8px",
-                          borderRadius: "10px", color: "#a78bfa"
-                        }}>
-                          {r.testType}
-                        </span>
-                        <h4 style={{ margin: 0, color: "#fff", fontSize: "14px" }}>{r.testName}</h4>
-                        {r.sentToStudent && (
-                          <span style={{
-                            background: "rgba(34,197,94,0.15)", color: "#22c55e",
-                            border: "1px solid #22c55e", borderRadius: "20px",
-                            padding: "1px 8px", fontSize: "10px", fontWeight: "600"
-                          }}>
-                            ✅ Sent
-                          </span>
-                        )}
+                      <div className="result-history-tags">
+                        <span className="pill-badge gray small">{r.testType}</span>
+                        {r.sentToStudent && <span className="pill-badge green small">✅ Sent</span>}
                       </div>
-                      <p style={{ margin: "0 0 2px", color: "#ccc", fontSize: "13px" }}>
-                        Marks: <strong style={{ color: "#fff" }}>{r.marksObtained}/{r.totalMarks}</strong>
-                        {" "}({r.percentage}%)
+                      <h4>{r.testName}</h4>
+                      <p className="result-history-marks">
+                        Marks: <strong>{r.marksObtained}/{r.totalMarks}</strong> ({r.percentage}%)
                       </p>
-                      <p style={{ margin: 0, color: "#666", fontSize: "12px" }}>
+                      <p className="result-history-date">
                         📅 {new Date(r.date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
                         {r.remarks && ` | 💬 ${r.remarks}`}
                       </p>
                     </div>
-
-                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                    <div className="result-history-actions">
                       {r.sentToStudent ? (
-                        <button onClick={() => handleUnsendResult(r._id, r.testName)} style={smallBtnStyle("#ef4444")}>
-                          🚫 Unsend
-                        </button>
+                        <button onClick={() => handleUnsendResult(r._id, r.testName)} className="action-btn red">🚫 Unsend</button>
                       ) : (
-                        <button onClick={() => handleSendResult(r._id, r.testName)} style={smallBtnStyle("#22c55e")}>
-                          📤 Send
-                        </button>
+                        <button onClick={() => handleSendResult(r._id)} className="action-btn green">📤 Send</button>
                       )}
-                      <button onClick={() => handleEditResult(r)} style={smallBtnStyle("#60a5fa")}>
-                        ✏️ Edit
-                      </button>
-                      <button onClick={() => handleDeleteResult(r._id, r.testName)} style={smallBtnStyle("#ef4444")}>
-                        🗑️ Delete
-                      </button>
+                      <button onClick={() => handleEditResult(r)} className="action-btn blue">✏️ Edit</button>
+                      <button onClick={() => handleDeleteResult(r._id, r.testName)} className="action-btn red">🗑️ Delete</button>
                     </div>
                   </div>
                 </div>
@@ -1019,16 +787,5 @@ const handleDeletePdf = async (pdfId, title) => {
     </div>
   );
 };
-
-const resultInputStyle = {
-  width: "100%", padding: "9px 12px", background: "#1e1e2e",
-  border: "1px solid #444", borderRadius: "8px", color: "#fff",
-  fontSize: "13px", boxSizing: "border-box", marginTop: "4px"
-};
-
-const smallBtnStyle = (color) => ({
-  background: `${color}22`, color: color, border: `1px solid ${color}`,
-  borderRadius: "6px", padding: "5px 10px", cursor: "pointer", fontSize: "12px"
-});
 
 export default AdminDashboard;
