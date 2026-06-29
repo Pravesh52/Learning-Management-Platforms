@@ -1,8 +1,13 @@
+
+
+
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./Header.css";
 import { useCart } from "../../context/CartContext";
+import TopBar from "../TopBar/TopBar";
 import Image from "../../assets/Image.png"
+
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -34,11 +39,12 @@ const Header = () => {
 
   return (
     <header className={`site-header ${scrolled ? "scrolled" : ""}`}>
+      <TopBar />
       <div className="header-container">
         {/* LOGO */}
         <Link to="/" className="header-logo">
-          {/* <img src="/Image.png" alt="Climax Academy" /> */}
-          <img src={Image} alt="Climax Academy" />
+         <img src={Image} alt="Climax Academy" />
+          {/* <img src="/logo.png" alt="Climax Academy" /> */}
           <span className="header-logo-text">CLIMAX ACADEMY</span>
         </Link>
 

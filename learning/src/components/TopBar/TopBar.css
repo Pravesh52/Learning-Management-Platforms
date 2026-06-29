@@ -1,0 +1,39 @@
+.top-utility-bar {
+  background: #f0f2f4;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 24px;
+  font-size: 12px;
+}
+
+.follow-us-text {
+  color: #0b0d12;
+  font-weight: 600;
+}
+
+.top-bar-socials {
+  display: flex;
+  gap: 12px;
+}
+
+.top-bar-socials a {
+  text-decoration: none;
+  font-size: 14px;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+.top-bar-socials a:hover {
+  opacity: 1;
+}
+
+@media (max-width: 480px) {
+  .top-utility-bar {
+    padding: 6px 16px;
+  }
+
+  .follow-us-text {
+    font-size: 11px;
+  }
+}

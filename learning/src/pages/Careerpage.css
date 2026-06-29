@@ -1,0 +1,156 @@
+.career-page {
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.career-hero {
+  background: linear-gradient(135deg, #0a1f44 0%, #1a3a6e 100%);
+  text-align: center;
+  padding: 60px 24px;
+}
+
+.career-hero h1 {
+  color: #fff;
+  font-size: 30px;
+  font-weight: 800;
+  margin: 0 0 14px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.career-hero p {
+  color: #cdd6e8;
+  font-size: 15px;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.career-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 50px 24px;
+}
+
+.career-content h3 {
+  color: #0a1f44;
+  font-size: 20px;
+  margin: 0 0 20px;
+}
+
+.career-points-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 40px;
+}
+
+.career-points-list li {
+  background: #f5f7fa;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #444;
+  line-height: 1.6;
+  border-left: 4px solid #a31f1f;
+}
+
+.career-points-list li strong {
+  color: #0a1f44;
+}
+
+.career-steps-title {
+  margin-top: 10px;
+}
+
+.career-steps-grid {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 40px;
+}
+
+.career-step-card {
+  display: flex;
+  gap: 16px;
+  background: #f5f7fa;
+  border-radius: 10px;
+  padding: 16px 20px;
+  align-items: flex-start;
+}
+
+.career-step-number {
+  background: #0a1f44;
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.career-step-card h4 {
+  color: #0a1f44;
+  font-size: 15px;
+  margin: 0 0 6px;
+}
+
+.career-step-card p {
+  color: #555;
+  font-size: 13px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.career-email-note {
+  color: #555;
+  font-size: 14px;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.career-email-note strong {
+  color: #a31f1f;
+}
+
+.career-contact-btn {
+  background: #a31f1f;
+  color: #fff;
+  border: none;
+  padding: 14px 36px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.career-contact-btn:hover {
+  background: #7a1212;
+}
+
+.career-coming-soon-badge {
+  display: inline-block;
+  margin: 14px 0 0 14px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+}
+
+@media (max-width: 768px) {
+  .career-hero h1 {
+    font-size: 22px;
+  }
+
+  .career-coming-soon-badge {
+    display: block;
+    margin: 14px 0 0;
+    text-align: center;
+  }
+}

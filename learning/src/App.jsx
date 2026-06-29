@@ -21,6 +21,10 @@ import Blogs from "./pages/Blogs";
 import BlogDetail from "./pages/BlogDetail";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
+import ManagementCareers from "./pages/ManagementCareers";
+import FacultyCareers from "./pages/FacultyCareers";
+import InvestWithUs from "./pages/InvestWithUs";
+import Franchise from "./pages/Franchise";
 
 // Auth Pages
 import Login from "./pages/Login";
@@ -55,6 +59,10 @@ function Layout() {
         <Route path="/blogs/:id" element={<BlogDetail />} />
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/contact-us" element={<ContactUs />} />
+        <Route path="/careers/management" element={<ManagementCareers />} />
+        <Route path="/careers/faculty" element={<FacultyCareers />} />
+        <Route path="/invest-with-us" element={<InvestWithUs />} />
+        <Route path="/franchise" element={<Franchise />} />
 
         {/* ===== AUTH PAGES ===== */}
         <Route path="/login" element={<Login />} />
