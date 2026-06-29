@@ -1,5 +1,5 @@
 import React from "react";
-import "./CareerPage.css";
+import "./Careerpage.css";
 import ContactForm from "../components/ContactForm/ContactForm";
 
 const CareerPage = ({ title, intro, whyTitle, points, steps, emailNote }) => {
