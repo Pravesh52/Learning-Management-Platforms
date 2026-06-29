@@ -1,5 +1,5 @@
 import React from "react";
-import CareerPage from "./CareerPage";
+import CareerPage from "./Careerpage";
 
 const Franchise = () => {
   return (
