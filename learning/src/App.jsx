@@ -21,7 +21,7 @@ import Blogs from "./pages/Blogs";
 import BlogDetail from "./pages/BlogDetail";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
-import ManagementCareers from "./pages/ManagementCareers";
+import ManagementCareers from "./pages/Managementcareers";
 import FacultyCareers from "./pages/FacultyCareers";
 import InvestWithUs from "./pages/InvestWithUs";
 import Franchise from "./pages/Franchise";
