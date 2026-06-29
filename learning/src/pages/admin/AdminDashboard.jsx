@@ -338,10 +338,12 @@ const AdminDashboard = () => {
   return (
     <div className="admin-container">
       {/* MOBILE TOP BAR */}
-      <div className="admin-mobile-topbar">
-        <button className="admin-hamburger" onClick={() => setSidebarOpen(true)}>☰</button>
-        <span className="admin-mobile-logo">Climax Academy — Admin</span>
-      </div>
+      {/* MOBILE TOP BAR */}
+<div className="admin-mobile-topbar">
+  <button className="admin-hamburger" onClick={() => setSidebarOpen(true)}>☰</button>
+  <span className="admin-mobile-logo">Climax Academy — Admin</span>
+  <button onClick={handleLogout} className="mobile-logout-btn">Logout</button>
+</div>
 
       {sidebarOpen && (
         <div className="admin-sidebar-overlay" onClick={() => setSidebarOpen(false)}></div>
