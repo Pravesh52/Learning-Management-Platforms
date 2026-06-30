@@ -352,7 +352,10 @@ const AdminDashboard = () => {
       {/* SIDEBAR */}
       <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="sidebar-header">
-          <h2>Climax Academy</h2>
+           <div className="sidebar-logo-row">
+              <img src="/favion.png" alt="Climax Academy" className="sidebar-logo-img" />
+               <h2>Climax Academy</h2>
+            </div>
           <button className="sidebar-close" onClick={() => setSidebarOpen(false)}>✖</button>
         </div>
         <ul>

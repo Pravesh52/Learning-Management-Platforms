@@ -16,6 +16,8 @@
   font-family: "Segoe UI", Arial, sans-serif;
 }
 
+
+
 /* ============================================================
    MOBILE TOP BAR
    ============================================================ */
@@ -80,6 +82,19 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.sidebar-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-logo-img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .sidebar-header {
