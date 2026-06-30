@@ -3,6 +3,7 @@ export const blogsData = [
     id: 1,
     title: "How to Prepare for NEET and JEE Together",
     date: "June 10, 2026",
+    image: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800&q=80",
     excerpt:
       "Balancing NEET and JEE preparation can be challenging without the right strategy. Here are proven tips to manage both exams effectively while staying consistent with your board studies.",
     content:
@@ -12,6 +13,7 @@ export const blogsData = [
     id: 2,
     title: "Effective Study Tips for Class 9th and 10th Students",
     date: "June 5, 2026",
+    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&q=80",
     excerpt:
       "Class 9th and 10th are foundation years for board exams and future competitive exams. Learn how to build strong study habits early on.",
     content:
@@ -21,6 +23,7 @@ export const blogsData = [
     id: 3,
     title: "Why Weekly Tests Matter for Exam Preparation",
     date: "May 28, 2026",
+    image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&q=80",
     excerpt:
       "Regular testing is one of the most underrated tools in exam preparation. Discover why weekly tests can make a huge difference in your results.",
     content:
@@ -30,6 +33,7 @@ export const blogsData = [
     id: 4,
     title: "Choosing the Right Stream After 10th: PCM or PCB?",
     date: "May 20, 2026",
+    image: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=800&q=80",
     excerpt:
       "One of the biggest decisions students face after Class 10th is choosing between PCM and PCB. Here's how to make the right choice.",
     content:

@@ -30,6 +30,10 @@ const BlogDetail = () => {
       </div>
 
       <div className="blog-detail-container">
+        <div className="blog-detail-image-wrapper">
+          <img src={blog.image} alt={blog.title} />
+        </div>
+
         <span className="blog-detail-date">{blog.date}</span>
         <h1 className="blog-detail-title">{blog.title}</h1>
 
@@ -50,9 +54,12 @@ const BlogDetail = () => {
           <div className="blog-related-grid">
             {relatedBlogs.map((b) => (
               <Link to={`/blogs/${b.id}`} className="blog-related-card" key={b.id}>
-                <span className="blog-related-date">{b.date}</span>
-                <h4>{b.title}</h4>
-                <p>{b.excerpt.slice(0, 90)}...</p>
+                <img src={b.image} alt={b.title} className="blog-related-image" />
+                <div className="blog-related-body">
+                  <span className="blog-related-date">{b.date}</span>
+                  <h4>{b.title}</h4>
+                  <p>{b.excerpt.slice(0, 90)}...</p>
+                </div>
               </Link>
             ))}
           </div>
